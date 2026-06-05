@@ -1,0 +1,14 @@
+﻿@import "tailwindcss";
+
+.registeration-form-container{
+    
+    label{
+        margin-right: 15px;
+        font-weight: bold;
+    }
+    .input-field {
+        padding: 0.30rem;
+        width: 25%;
+
+    }
+}
