@@ -1,9 +1,9 @@
 ﻿import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 
-export async function GetListings() {
+export async function GetAvailableRooms() {
     try {
-        const response = await axios.get(`${apiBaseUrl}/Property`);
+        const response = await axios.get(`${apiBaseUrl}/rooms`);
         console.log(response.data);
         return response.data;
     }

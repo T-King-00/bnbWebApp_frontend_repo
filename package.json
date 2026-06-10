@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "node ./node_modules/vite/bin/vite.js",
+    "build": "node ./node_modules/vite/bin/vite.js build",
+    "lint": "node ./node_modules/eslint/bin/eslint.js .",
+    "preview": "node ./node_modules/vite/bin/vite.js preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -16,6 +16,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.77.0",
+    "requirements": "^4.0.2",
     "tailwindcss": "^4.3.0",
     "yup": "^1.7.1"
   },

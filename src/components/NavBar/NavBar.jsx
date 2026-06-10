@@ -3,7 +3,7 @@
 function NavBar() {
 return(
     <div>
-        <h1 className={"text-2xl font-bold text-center "}>Bed and breakfast</h1>
+        <h1 className={"text-2xl font-bold text-center "}>Bed and breakfast Hotel</h1>
     </div>
 
     )

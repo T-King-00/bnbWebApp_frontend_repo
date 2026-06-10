@@ -2,22 +2,26 @@ import './App.css'
 import BookingList from "./Page/BookingList.jsx";
 import NavBar from "./components/NavBar/NavBar.jsx";
 import "./API/apiBase.js"
-import {GetListings} from "./API/GetListings.js";
+import {GetAvailableRooms} from "./API/GetListings.js";
 import {useEffect, useState} from "react";
+import SearchBar from "./components/searchBar/SearchBar.jsx";
+
+
 
 function App() {
-    const [listings, setListings] = useState([]);
+    const [roomsAvailable, setRoomsListing] = useState([]);
     
     useEffect(() => {
-        GetListings()
-            .then(setListings)
+        GetAvailableRooms()
+            .then(setRoomsListing)
             .catch(console.error)
     },[]);
     
     return (
         <>
             <NavBar/>
-            <BookingList data={listings}/>
+            <SearchBar/>
+            <BookingList data={roomsAvailable}/>
         </>
     )
 }
