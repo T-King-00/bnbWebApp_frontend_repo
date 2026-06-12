@@ -1,8 +1,7 @@
-﻿import "./bookingList.css"
-import CardItem from "../components/CardItem/CardItem.jsx";
+﻿import "./RoomListings.css"
+import CardItem from "../CardItem/CardItem.jsx";
 
-
-function BookingList({data = []}) {
+function RoomListings({data = []}) {
 
     const items = Array.isArray(data) ? data : [];
 
@@ -13,12 +12,11 @@ function BookingList({data = []}) {
                     <CardItem key={item.id} data={item}/>
                 )
             }
-           
         </div>
     )
 }
 
-export default BookingList;
+export default RoomListings;
 
 /*
 <ul>

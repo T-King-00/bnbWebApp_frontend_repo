@@ -19,7 +19,7 @@ function CardItem(props) {
                    <h3 className="text-xl font-bold pt-2 text-emerald-700">Price: {room.price.basePrice}</h3>
                    <a className={"bg-emerald-600 text-white p-2 rounded-lg text-center font-semibold hover:bg-emerald-700 transition-colors"} >
                        <i></i>
-                       Book Now
+                       <button >See Rum </button>
                    </a>
                </div>
            </div>

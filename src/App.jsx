@@ -1,28 +1,27 @@
 import './App.css'
-import BookingList from "./Page/BookingList.jsx";
-import NavBar from "./components/NavBar/NavBar.jsx";
+import { Outlet } from 'react-router'
+
+import RoomListings from "./components/RoomListings/RoomListings.jsx";
+import Header from "./components/Header/Header.jsx";
 import "./API/apiBase.js"
 import {GetAvailableRooms} from "./API/GetListings.js";
 import {useEffect, useState} from "react";
 import SearchBar from "./components/searchBar/SearchBar.jsx";
+import Footer from "./components/Footer/Footer.jsx";
 
 
 
 function App() {
-    const [roomsAvailable, setRoomsListing] = useState([]);
-    
-    useEffect(() => {
-        GetAvailableRooms()
-            .then(setRoomsListing)
-            .catch(console.error)
-    },[]);
+
     
     return (
-        <>
-            <NavBar/>
-            <SearchBar/>
-            <BookingList data={roomsAvailable}/>
-        </>
+        <div id={"App"} >
+            <Header></Header>
+            <main>
+                <Outlet/>
+            </main>
+            <Footer></Footer>
+        </div>
     )
 }
 
