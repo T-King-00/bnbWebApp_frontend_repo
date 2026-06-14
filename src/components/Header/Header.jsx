@@ -37,8 +37,8 @@ function Header() {
     const navLinkClass = () => menuButtonClass;
     
     return (
-       <header className="sticky top-0 z-50 flex w-full flex-col  md:flex-row  md:z-auto justify-between border-b border-border bg-surface px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
-           <div className={"flex items-center gap-3"}>
+       <header className="sticky top-0 z-50 flex w-full flex-col md:flex-row justify-between border-b border-border bg-surface px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
+           <div className={"flex items-center gap-3 "}>
                <NavLink to="/" className="group flex items-center gap-3 mb-2 w-[80%] md:w-full">
                     <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-text shadow-sm transition group-hover:bg-primary-hover">
                         B&B
@@ -75,7 +75,7 @@ function Header() {
            </div>
            
   
-           <div className={`navbar-hamburger text-text-muted absolute left-0 flex w-full items-center border-b border-border bg-surface px-4 py-4 shadow-md transition-all duration-500 ease-in md:static md:w-auto md:border-0 md:p-0 md:shadow-none md:opacity-100
+           <div className={`navbar-hamburger z-50 text-text-muted absolute left-0 flex w-full items-center border-b border-border bg-surface px-4 py-4 shadow-md transition-all duration-500 ease-in md:static md:w-auto md:border-0 md:p-0 md:shadow-none md:opacity-100
            ${isOpen ? "top-full opacity-100" : "top-[-400px] opacity-0"}` }>
             
                <div className="w-full" id="navbar-hamburger">

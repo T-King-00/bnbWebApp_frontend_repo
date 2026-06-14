@@ -11,6 +11,8 @@ import {
 import HomePage from "./Page/Home/HomePage.jsx";
 import Rooms from "./Page/Rooms/Rooms.jsx";
 import LoginPage from "./Page/Login/LoginPage.jsx";
+import RoomDetails from "./Page/RoomDetails/RoomDetails.jsx";
+import BookingForm from "./Page/BookingForm/BookingForm.jsx";
 
 
 const router= createBrowserRouter(createRoutesFromElements(
@@ -19,8 +21,11 @@ const router= createBrowserRouter(createRoutesFromElements(
            errorElement={<p>Route error: the page failed to render.</p>}
     >
         <Route path={"/"}index element={<HomePage/>}/>
-        <Route path={"/rooms"} element={<Rooms/>}/>
         <Route path={"/Login"} element={<LoginPage/>}/>
+        <Route path={"/rooms"} element={<Rooms/>}/>
+        <Route path={"/rooms/:id"} element={<RoomDetails/>}/>
+        <Route path={"/rooms/:id/bookingForm"} element={<BookingForm/>}/>
+
       
     </Route>,
 ),)

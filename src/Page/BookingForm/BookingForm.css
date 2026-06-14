@@ -1,0 +1,303 @@
+.booking-page {
+    min-height: calc(100vh - 88px);
+    padding: clamp(2rem, 5vw, 4.5rem) 1.25rem;
+    background:
+        linear-gradient(120deg, rgba(0, 209, 255, 0.12), transparent 34%),
+        radial-gradient(circle at 92% 12%, rgba(61, 136, 153, 0.2), transparent 24rem),
+        var(--bg);
+    color: var(--text);
+}
+
+.booking-page__header {
+    width: min(100%, 72rem);
+    margin: 0 auto 2rem;
+}
+
+.booking-page__eyebrow,
+.booking-summary__label {
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.booking-page__header h1 {
+    margin: 0.45rem 0 0.75rem;
+    font-size: clamp(2.3rem, 6vw, 4.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.07em;
+}
+
+.booking-page__header p {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.booking-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    gap: clamp(1.25rem, 3vw, 2rem);
+    width: min(100%, 72rem);
+    margin: 0 auto;
+    align-items: start;
+}
+
+.booking-form {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.booking-card,
+.booking-summary {
+    border: 1px solid var(--border);
+    border-radius: 1.75rem;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    box-shadow: 0 1.25rem 3rem var(--shadow);
+}
+
+.booking-card {
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.booking-card__heading {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.booking-card__step {
+    display: inline-flex;
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    background: var(--surface-soft);
+    color: var(--primary);
+    font-weight: 900;
+}
+
+.booking-card h2,
+.booking-summary h2 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    letter-spacing: -0.04em;
+}
+
+.booking-card p,
+.booking-summary p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.booking-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+}
+
+.booking-amenities span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.45rem 0.75rem;
+}
+
+.booking-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.booking-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.booking-field--full {
+    grid-column: 1 / -1;
+}
+
+.booking-field label {
+    color: var(--text);
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+.booking-field input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    outline: none;
+    padding: 0.95rem 1rem;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.booking-field input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.72;
+}
+
+.booking-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.25rem var(--focus-ring);
+    transform: translateY(-1px);
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.payment-option {
+    display: grid;
+    gap: 0.3rem;
+    min-height: 6rem;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    padding: 1rem;
+    text-align: left;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.payment-option span {
+    font-weight: 900;
+}
+
+.payment-option small {
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.payment-option:hover,
+.payment-option--selected {
+    border-color: var(--primary);
+    box-shadow: 0 0.9rem 2rem rgba(61, 136, 153, 0.18);
+    transform: translateY(-2px);
+}
+
+.payment-option--selected {
+    background: linear-gradient(135deg, var(--primary), var(--accent-hover));
+    color: var(--primary-text);
+}
+
+.payment-option--selected small {
+    color: color-mix(in srgb, var(--primary-text) 78%, transparent);
+}
+
+.booking-submit {
+    width: 100%;
+    border: 0;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--accent-hover));
+    color: var(--primary-text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 900;
+    padding: 1rem 1.25rem;
+    transition: box-shadow 180ms ease, transform 180ms ease, filter 180ms ease;
+}
+
+.booking-submit:hover {
+    box-shadow: 0 1rem 2rem rgba(61, 136, 153, 0.24);
+    filter: saturate(1.08);
+    transform: translateY(-2px);
+}
+
+.payment-option:focus-visible,
+.booking-submit:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem var(--focus-ring);
+}
+
+.booking-summary {
+    position: sticky;
+    top: 6.5rem;
+    padding: 1.5rem;
+}
+
+.booking-summary h2 {
+    margin-top: 0.45rem;
+}
+
+.booking-summary dl {
+    display: grid;
+    gap: 0.8rem;
+    margin: 1.5rem 0;
+}
+
+.booking-summary dl div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.8rem;
+}
+
+.booking-summary dt {
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+.booking-summary dd {
+    margin: 0;
+    color: var(--text);
+    font-weight: 900;
+}
+
+.booking-summary__total {
+    border-bottom: 0 !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 1rem;
+    background: var(--surface-soft);
+}
+
+.booking-summary__total dd {
+    color: var(--primary);
+    font-size: 1.15rem;
+}
+
+@media (max-width: 860px) {
+    .booking-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 560px) {
+    .booking-page {
+        padding: 2rem 1rem;
+    }
+
+    .booking-card__heading {
+        flex-direction: column;
+    }
+
+    .booking-fields,
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+}
