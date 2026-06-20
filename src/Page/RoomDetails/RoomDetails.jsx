@@ -1,5 +1,5 @@
-import {GetRoomDetails} from "../../API/GetAPIs.js";
-import {NavLink,Link, useParams} from "react-router";
+import {GetRoomDetails} from "../../API/GetAPIs.jsx";
+import {NavLink, Link, useParams, useNavigate} from "react-router";
 import {create} from "zustand";
 import {useEffect , useState} from "react";
 
@@ -21,6 +21,7 @@ function RoomDetails() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
+    const navigate = useNavigate();
     useEffect(() => {
         //acts as a render guard to prevent null object and string
         if (!Number.isInteger(roomId) ) {
@@ -41,7 +42,7 @@ function RoomDetails() {
                 setErrorMessage(error.message)
             })
             .finally(() => setIsLoading(false));
-    },[roomId,setRoom,room] );
+    },[setRoom] );
     if (isLoading) {
         return (
             <section className="min-h-[70vh] bg-bg px-4 py-16 text-text sm:px-6 lg:px-8">
@@ -138,11 +139,18 @@ function RoomDetails() {
                                 <p>Local host support</p>
                             </div>
                             <NavLink
-                                to="/rooms/:id/bookingForm"
+                                to={`/rooms/${room.id}/bookingForm`}
                                 className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 font-black text-primary-text shadow-lg shadow-cyan-900/10 transition hover:-translate-y-0.5 hover:bg-primary-hover"
                             >
                                 Book this room
                             </NavLink>
+                            <button
+                                type="button"
+                                className="mt-4 inline-flex w-full items-center justify-center rounded-2xl border border-border bg-surface px-5 py-3 font-black text-text-muted shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:bg-surface-soft hover:text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                                onClick={()=>navigate(-1)}
+                            >
+                                Back
+                            </button>
                         </aside>
                     </div>
                 </article>

@@ -1,14 +1,19 @@
 import "./SearchBar.css"
-
 import {useDateStore} from "../../Page/Rooms/Rooms.jsx";
+import {create} from "zustand";
+import {number} from "yup";
 
+export const useNoOfGuests=create((set) => ({
+    noOfGuests: null,
+    setNoOfGuests: (noOfGuests) => set({noOfGuests:noOfGuests }),
+}))
 
 function SearchBar({onSearch}) {
 
     const setCheckInDate=useDateStore((state) => state.setCheckInDate);
     const setCheckOutDate =useDateStore((state) => state.setCheckOutDate);
     const {checkInDate, checkOutDate} = useDateStore(state => state);
-
+    const setNoOfGuests=useNoOfGuests((state) => state.setNoOfGuests);
     return (
         
         <>
@@ -33,11 +38,11 @@ function SearchBar({onSearch}) {
                            onChange={(e) =>setCheckOutDate(e.target.value)}/>
                 </div>
                 <div className={"item-container "}>
-                    <label className="text-sm font-black text-text">Number of persons</label>
+                    <label className="text-sm font-black text-text">Number of Guests</label>
                     <input className={"input-field p-2 rounded-2xl border border-border " +
                         "bg-surface-soft text-text outline-none transition" +
                         " focus:border-primary focus:ring-2 focus:ring-focus-ring"}
-                           type={"number"}/>
+                           type={"number"} onChange={(e) =>setNoOfGuests(e.target.value)}/>
                 </div>
                 <div className={"item-container "}>
                     <button className={"rounded-2xl border border-primary bg-primary " +

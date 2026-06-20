@@ -102,6 +102,16 @@ function Header() {
                                </NavLink>
                            </div>
                        </li>
+                       <li className={"my-1 md:my-0"}>
+                           <div className="flex w-full items-center gap-3">
+                               <NavLink
+                                   to="/bookings"
+                                   className={menuButtonClass}
+                               >
+                                   Bookings
+                               </NavLink>
+                           </div>
+                       </li>
                        <li className={"my-1 md:my-0" }>
                            <div className="flex w-full items-center gap-3">
 

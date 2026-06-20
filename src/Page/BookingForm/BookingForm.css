@@ -223,8 +223,31 @@
     transform: translateY(-2px);
 }
 
+.booking-cancel {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--surface-soft) 84%, transparent);
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 900;
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.booking-cancel:hover {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+    box-shadow: 0 0.85rem 1.7rem rgba(61, 136, 153, 0.14);
+    transform: translateY(-2px);
+}
+
+
 .payment-option:focus-visible,
-.booking-submit:focus-visible {
+.booking-submit:focus-visible,
+.booking-cancel:focus-visible {
     outline: 0;
     box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }

@@ -1,7 +1,8 @@
 import {useEffect} from "react";
-import {GetAllRooms, GetAvailableRoomsWithinSpecificDataes} from "../../API/GetAPIs.js";
+import {GetAllRooms, GetAvailableRoomsWithFilter} from "../../API/GetAPIs.jsx";
 import RoomListings from "../../components/Rooms/RoomListings/RoomListings.jsx";
 import SearchBar from "../../components/searchBar/SearchBar.jsx";
+import {useNoOfGuests} from "../../components/searchBar/SearchBar.jsx";
 import {create} from "zustand";
 
 export const useDateStore = create((set) => ({
@@ -10,6 +11,7 @@ export const useDateStore = create((set) => ({
     setCheckInDate: (date) => set({checkInDate: date}),
     setCheckOutDate: (date) => set({checkOutDate: date}),
 }))
+
 
 export const useRoomsList = create((set) => ({
     rooms: [],
@@ -21,6 +23,7 @@ export const useRoomsList = create((set) => ({
 
 function Rooms() {
     const {checkInDate, checkOutDate} = useDateStore(state => state);
+    const noOfGuests=useNoOfGuests(state=>state.noOfGuests);
 
 
     const rooms = useRoomsList(state => state.rooms);
@@ -35,15 +38,13 @@ function Rooms() {
         console.log(typeof checkInDate);
 
 
-        GetAvailableRoomsWithinSpecificDataes(checkInDate, checkOutDate)
+        GetAvailableRoomsWithFilter(checkInDate, checkOutDate,noOfGuests)
             .then((rooms) => setRoomsListing(rooms))
-            .catch(console.error);
     }
 
     useEffect(() => {
         GetAllRooms()
             .then(setRoomsListing)
-            .catch(console.error);
     }, []);
 
 
