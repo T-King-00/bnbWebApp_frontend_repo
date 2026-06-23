@@ -1,7 +1,8 @@
 import {GetRoomDetails} from "../../API/GetAPIs.jsx";
-import {NavLink, Link, useParams, useNavigate} from "react-router";
+import {NavLink, useParams, useNavigate} from "react-router";
 import {create} from "zustand";
 import {useEffect , useState} from "react";
+import {useDateStore} from "../Rooms/Rooms.jsx";
 
 
 const useRoom=create((set)=>({
@@ -22,6 +23,10 @@ function RoomDetails() {
     const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
+
+    const checkInDate = useDateStore((state)=> state.checkInDate);
+    const checkOutDate = useDateStore((state)=> state.checkOutDate);
+
     useEffect(() => {
         //acts as a render guard to prevent null object and string
         if (!Number.isInteger(roomId) ) {
@@ -32,7 +37,7 @@ function RoomDetails() {
         setIsLoading(true);
         setErrorMessage("");
 
-        GetRoomDetails(roomId)
+        GetRoomDetails(roomId,checkInDate,checkOutDate)
             .then((roomData)=>{
                 setRoom(roomData);
                 setErrorMessage("")
@@ -74,8 +79,8 @@ function RoomDetails() {
     }
 
 
-    const guestCount = room.beds?.reduce((total, bed) => total + (bed.quantity ?? 0), 0) || "Guest";
-    const basePrice = room.price?.basePrice ?? "Contact us";
+    const guestCount = room.maxGuestsAmount ;
+    const basePrice = room.basePrice ?? "Contact us";
     const amenities = room.amenities?.length ? room.amenities : ["Breakfast included", "Free Wi-Fi", "Private bath"];
 
     return (
@@ -141,7 +146,7 @@ function RoomDetails() {
                             <NavLink
                                 to={`/rooms/${room.id}/bookingForm`}
                                 className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 font-black text-primary-text shadow-lg shadow-cyan-900/10 transition hover:-translate-y-0.5 hover:bg-primary-hover"
-                            >
+                            state={{room}}>
                                 Book this room
                             </NavLink>
                             <button

@@ -1,10 +1,11 @@
 import "./SearchBar.css"
 import {useDateStore} from "../../Page/Rooms/Rooms.jsx";
 import {create} from "zustand";
-import {number} from "yup";
+import {useState} from "react";
 
-export const useNoOfGuests=create((set) => ({
-    noOfGuests: null,
+
+export const useNoOfGuestsStore=create((set) => ({
+    noOfGuests: 1,
     setNoOfGuests: (noOfGuests) => set({noOfGuests:noOfGuests }),
 }))
 
@@ -13,7 +14,37 @@ function SearchBar({onSearch}) {
     const setCheckInDate=useDateStore((state) => state.setCheckInDate);
     const setCheckOutDate =useDateStore((state) => state.setCheckOutDate);
     const {checkInDate, checkOutDate} = useDateStore(state => state);
-    const setNoOfGuests=useNoOfGuests((state) => state.setNoOfGuests);
+    const setNoOfGuests=useNoOfGuestsStore((state) => state.setNoOfGuests);
+    const noOfGuests=useNoOfGuestsStore((state) => state.noOfGuests);
+    const [hasSearchChanged, setHasSearchChanged] = useState(false);
+
+    const guestsCount = Number(noOfGuests);
+    const hasValidSearchValues = Boolean(checkInDate && checkOutDate && guestsCount > 0);
+    const isSearchActive = hasSearchChanged && hasValidSearchValues;
+
+    //event handlers for input date fields and number of guests.
+    const handleCheckInDateChange =(event)=>{
+        setCheckInDate(event.target.value);
+        setHasSearchChanged(true);
+    };
+    const handleCheckOutDateChange = (event) => {
+        setCheckOutDate(event.target.value);
+        setHasSearchChanged(true);
+    };
+    const handleGuestsChange = (event) => {
+        setNoOfGuests(Number(event.target.value));
+        setHasSearchChanged(true);
+    };
+
+    const handleSearchClick = () => {
+        if (!isSearchActive) {
+            return;
+        }
+
+        onSearch(checkInDate, checkOutDate);
+        setHasSearchChanged(false);
+    };
+
     return (
         
         <>
@@ -26,7 +57,9 @@ function SearchBar({onSearch}) {
                            id={"checkInDate"} 
                            type={"date"}
                            placeholder={"Check-in"}
-                           onChange={(e) =>setCheckInDate(e.target.value)}/>
+                        value={checkInDate}
+                           onChange={handleCheckInDateChange}/>
+
                 </div>
                 <div className={"item-container "}>
                     <label htmlFor="checkOutDate" className="text-sm font-black text-text">
@@ -35,21 +68,32 @@ function SearchBar({onSearch}) {
                     <input className={"input-field p-2 rounded-2xl border border-border bg-surface-soft text-text outline-none transition focus:border-primary focus:ring-2 focus:ring-focus-ring"}
                            id={"checkOutDate"} 
                            type={"date"}
-                           onChange={(e) =>setCheckOutDate(e.target.value)}/>
+                           value={checkOutDate}
+                           onChange={handleCheckOutDateChange}/>
                 </div>
                 <div className={"item-container "}>
                     <label className="text-sm font-black text-text">Number of Guests</label>
                     <input className={"input-field p-2 rounded-2xl border border-border " +
-                        "bg-surface-soft text-text outline-none transition" +
-                        " focus:border-primary focus:ring-2 focus:ring-focus-ring"}
-                           type={"number"} onChange={(e) =>setNoOfGuests(e.target.value)}/>
+                           "bg-surface-soft text-text outline-none transition" +
+                           " focus:border-primary focus:ring-2 focus:ring-focus-ring"}
+                           type={"number"}
+                           min="1"
+                           value={noOfGuests}
+                           onChange={handleGuestsChange}/>
                 </div>
                 <div className={"item-container "}>
-                    <button className={"rounded-2xl border border-primary bg-primary " +
-                        "px-5 py-2 font-bold text-primary-text shadow-sm transition-colors" +
-                        " duration-200 hover:border-primary-hover hover:bg-primary-hover " +
-                        "focus:outline-none focus:ring-2 focus:ring-focus-ring"}
-                            onClick={()=>onSearch(checkInDate,checkOutDate)}>Search</button>
+                    <button
+                        type="button"
+                        disabled={!isSearchActive}
+                        className={
+                            isSearchActive
+                                ? "rounded-2xl border border-primary bg-primary px-5 py-2 font-bold text-primary-text shadow-sm transition-colors duration-200 hover:border-primary-hover hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                                : "cursor-not-allowed rounded-2xl border border-border bg-surface-soft px-5 py-2 font-bold text-text-muted opacity-70"
+                        }
+                        onClick={handleSearchClick}
+                    >
+                        Search
+                    </button>
                 </div>
                 <div className={"item-container rounded-2xl bg-surface-soft text-sm font-bold text-text-muted"}>
 
@@ -60,4 +104,3 @@ function SearchBar({onSearch}) {
 }
 
 export default SearchBar;
-

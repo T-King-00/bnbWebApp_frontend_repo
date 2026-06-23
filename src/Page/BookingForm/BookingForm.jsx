@@ -1,45 +1,58 @@
 import "./BookingForm.css";
 import {PostBookingReq} from "../../API/PostAPIs.jsx";
-import {useParams,useNavigate} from "react-router";
+import {useParams, useNavigate, useLocation} from "react-router";
 import {useDateStore} from "../Rooms/Rooms.jsx";
 import {differenceInCalendarDays, parseISO} from "date-fns";
-import useNoOfGuests from "../../components/searchBar/SearchBar.jsx";
+import {useNoOfGuestsStore} from "../../components/searchBar/SearchBar.jsx";
 function BookingForm() {
 
+    const location = useLocation();
+
+    const room = location.state?.room;
     const {id} = useParams();
     const roomId = Number(id);
 
     //for backward navigation
     const navigate = useNavigate();
     //using global zustand states
-
-    // for including date .
+    //  for including date .
     const checkInDate = useDateStore((state)=> state.checkInDate);
     const checkOutDate = useDateStore((state)=> state.checkOutDate);
     const durationOfStay = checkInDate && checkOutDate
         ? Math.max(0, differenceInCalendarDays(parseISO(checkOutDate), parseISO(checkInDate)))
         : 0;
-    const noOfGuests=useNoOfGuests((state)=> state.noOfGuests);
+    const noOfGuests=useNoOfGuestsStore((state)=> state.noOfGuests);
 
-
-    const handleBooking = (event) => {
+    const handleBooking = async (event) => {
         event.preventDefault();
+        try {
+            const response = await PostBookingReq({
+                Id: 1,
+                roomId: roomId,
+                hotelId: 1,
+                CheckInDate: checkInDate,
+                CheckOutDate: checkOutDate,
+                NumberOfGuests: noOfGuests,
+                Customer: {
+                    customerId: 1,
+                    FirstName: "John",
+                    LastName: "Doe",
+                    Email: "john@outloo.com",
+                    PhoneNumber: "1234567890",
+                }
+            });
+            const booking=response.data.bookingResponseDto
+            navigate(`/bookingSuccess/${booking.bookingId}`)
+        } catch (error) {
+            console.error("BookingFailed: ", error);
+            navigate(`/bookingFailed`)
+        }
 
-        PostBookingReq({
-            Id:1,
-            roomId:roomId,
-            CheckInDate: checkInDate,
-            CheckOutDate: checkOutDate,
-            NumberOfGuests: noOfGuests,
-            Customer: {
-                FirstName: "John",
-                LastName: "Doe",
-                Email: "john@outloo.com",
-                PhoneNumber: "1234567890",
-            }
-        })};
+    }
+
 
     return (
+
         <section className="booking-page">
             <div className="booking-page__header">
                 <span className="booking-page__eyebrow">Secure booking</span>
@@ -54,7 +67,7 @@ function BookingForm() {
                             <span className="booking-card__step">01</span>
                             <div>
                                 <h2 id="guest-details-title">Who's checking in?</h2>
-                                <p>Room number 204, sea-view double room with breakfast included.</p>
+                                <p> Room number  {room.id}, sea-view double room with breakfast included.</p>
                             </div>
                         </div>
 
@@ -80,8 +93,8 @@ function BookingForm() {
                                 <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+46 70 123 45 67" />
                             </div>
                             <div className="booking-field">
-                                <label htmlFor="NumberOfPersons">Number of People</label>
-                                <input type="number" id="NumberOfPersons" name="NumberOfPersons" placeholder="1" />
+                                <label htmlFor="NumberOfGuests">Number of Guests</label>
+                                <input type="number" id="NumberOfGuests" name="NumberOfGuests" placeholder="1" />
                             </div>
                         </div>
 
@@ -123,10 +136,11 @@ function BookingForm() {
                     <dl>
                         <div>
                             <dt>Room</dt>
-                            <dd>{roomId}</dd>
+                            <dd>{room.id}</dd>
                         </div>
                         <div>
-                            <dt>Guests</dt>
+                            <dt>Number of Guests</dt>
+
                             <dd>{noOfGuests}</dd>
                         </div>
                         <div>
@@ -144,7 +158,7 @@ function BookingForm() {
 
                         <div className="booking-summary__total">
                             <dt>Total</dt>
-                            <dd>2,400 SEK</dd>
+                            <dd>{room.totalPrice}</dd>
                         </div>
                     </dl>
                     <p>Includes breakfast, taxes, and flexible cancellation until 24 hours before arrival.</p>

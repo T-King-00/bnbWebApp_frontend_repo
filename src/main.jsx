@@ -14,6 +14,9 @@ import LoginPage from "./Page/Login/LoginPage.jsx";
 import RoomDetails from "./Page/RoomDetails/RoomDetails.jsx";
 import BookingForm from "./Page/BookingForm/BookingForm.jsx";
 import Bookings from "./Page/Bookings/Bookings.jsx";
+import BookingSuccess from "./Page/BookingStatus/BookingSuccess.jsx";
+import BookingFailed from "./Page/BookingStatus/BookingFailed.jsx";
+
 
 
 const router= createBrowserRouter(createRoutesFromElements(
@@ -26,7 +29,10 @@ const router= createBrowserRouter(createRoutesFromElements(
         <Route path={"/rooms"} element={<Rooms/>}/>
         <Route path={"/rooms/:id"} element={<RoomDetails/>}/>
         <Route path={"/rooms/:id/bookingForm"} element={<BookingForm/>}/>
+        <Route path={"/bookingSuccess/:BookingId"} element={<BookingSuccess/>}/>
+        <Route path={"/bookingFailed"} element={<BookingFailed/>}/>
         <Route path={"/bookings"} element={<Bookings/>}/>
+
 
       
     </Route>,

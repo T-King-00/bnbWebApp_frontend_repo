@@ -28,7 +28,7 @@ export async function PostBookingReq(bookingRequest) {
         const response = await axios.post(url, bookingRequest);
 
         loggingUtility.success(MODULE, response.data);
-        return response.data.message;
+        return response;
     }
     catch (error)
     {
@@ -37,6 +37,9 @@ export async function PostBookingReq(bookingRequest) {
             error.response?.status ?? "NO_RESPONSE",
             error.response?.data ?? getAxiosErrorMessage(error)
         );
-        throw error;
+        return null;
     }
+
+
+
 }

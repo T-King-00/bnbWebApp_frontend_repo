@@ -12,10 +12,10 @@ function getAxiosErrorMessage(error) {
     }
     return error.message;
 }
-export async function GetRoomDetails(idAsInt) {
+export async function GetRoomDetails(idAsInt,checkInDateObj,checkOutDateObj) {
     const MODULE = "GetAPI.GetRoomDetails";
     try {
-        const url = `${apiBaseUrl}/rooms/${idAsInt}`;
+        const url = `${apiBaseUrl}/rooms/${idAsInt}?checkInDate=${checkInDateObj}&checkOutDate=${checkOutDateObj}`;
 
         loggingUtility.info(MODULE, `Fetching room details from backend server for room id ${idAsInt}`);
         loggingUtility.request(MODULE, url);
