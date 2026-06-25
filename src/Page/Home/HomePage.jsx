@@ -4,7 +4,7 @@ import { NavLink } from "react-router";
 function HomePage() {
     return (
         <section className="bg-bg text-text">
-            <div className="mx-auto grid min-h-[calc(100vh-88px)] max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+            <div className="mx-auto grid min-h-[calc(78vh-88px)] max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
                 <div>
                     <p className="mb-4 text-sm font-black uppercase tracking-widest text-orange-500">
                         Comfortable stays made simple

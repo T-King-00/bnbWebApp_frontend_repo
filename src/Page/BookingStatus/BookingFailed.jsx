@@ -1,6 +1,16 @@
-import {useNavigate} from "react-router";
+import {useLocation, useNavigate} from "react-router";
+
+function formatBookingError(errorMsg) {
+    if (!errorMsg)
+        return "An unexpected error occurred.";
+
+    return errorMsg.message ;
+}
 
 function BookingFailed() {
+
+    const param =useLocation();
+    const error = formatBookingError(param.state?.errorMsg);
 
     const navigate = useNavigate();
 
@@ -19,6 +29,10 @@ function BookingFailed() {
                     <h1 className="mt-3 text-3xl font-black tracking-tight text-text sm:text-5xl">
                         We could not complete your booking
                     </h1>
+                    <p  className="mx-auto mt-4 max-w-xl text-base leading-7 text-text-muted sm:text-lg">
+                        {error}
+                    </p>
+
                     <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-text-muted sm:text-lg">
                         The room may no longer be available, or the booking request could not be completed.
                         Please review your stay details and try again.

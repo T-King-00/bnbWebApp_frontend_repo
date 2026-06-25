@@ -25,28 +25,33 @@ function BookingForm() {
 
     const handleBooking = async (event) => {
         event.preventDefault();
-        try {
-            const response = await PostBookingReq({
-                Id: 1,
-                roomId: roomId,
-                hotelId: 1,
-                CheckInDate: checkInDate,
-                CheckOutDate: checkOutDate,
-                NumberOfGuests: noOfGuests,
-                Customer: {
-                    customerId: 1,
-                    FirstName: "John",
-                    LastName: "Doe",
-                    Email: "john@outloo.com",
-                    PhoneNumber: "1234567890",
-                }
-            });
-            const booking=response.data.bookingResponseDto
-            navigate(`/bookingSuccess/${booking.bookingId}`)
-        } catch (error) {
-            console.error("BookingFailed: ", error);
-            navigate(`/bookingFailed`)
+
+        const bookingReq= {
+            Id: 1,
+            roomId: roomId,
+            hotelId: 1,
+            CheckInDate: checkInDate,
+            CheckOutDate: checkOutDate,
+            NumberOfGuests: noOfGuests,
+            Customer: {
+                customerId: 1,
+                FirstName: "John",
+                LastName: "Doe",
+                Email: "john@outloo.com",
+                PhoneNumber: "1234567890",
+            }
+        };
+
+        await PostBookingReq(bookingReq).then((response)=>{
+                     const booking = response.data.bookingResponseDto;
+                     navigate(`${booking.bookingId}/bookingSuccess`)
         }
+        ).catch((err)=>{
+                 const errorMsg = err;
+                 console.log("error",errorMsg)
+                 navigate(`/bookingFailed`,{state:{errorMsg}})
+        });
+
 
     }
 

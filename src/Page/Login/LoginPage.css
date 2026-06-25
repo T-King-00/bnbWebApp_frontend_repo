@@ -78,7 +78,7 @@
 }
 
 .login-card__eyebrow {
-    color: var(--text-muted);
+    color: text-orange-500;
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.18em;

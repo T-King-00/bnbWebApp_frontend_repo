@@ -87,7 +87,7 @@ export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateOb
 export async function GetBookings(){
     const MODULE = "GetAPI.GetBookings";
     try {
-        const url = `${apiBaseUrl}/Booking`;
+        const url = `${apiBaseUrl}/api/bookings`;
 
         loggingUtility.info(MODULE, "Fetching bookings from backend server");
         loggingUtility.request(MODULE, url);

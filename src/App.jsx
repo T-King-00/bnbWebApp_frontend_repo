@@ -15,7 +15,7 @@ function App() {
     return (
         <div id={"App"} >
             <Header></Header>
-            <main>
+            <main className={"min-h-[calc(72vh-88px)] bg-bg px-4 py-10 text-text "}>
                 <Outlet/>
             </main>
             <Footer></Footer>

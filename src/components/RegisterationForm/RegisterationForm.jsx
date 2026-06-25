@@ -30,12 +30,15 @@ function RegisterationForm(){
                 <label htmlFor={"name"}>Name:</label>
                 <input className={"input-field w-[20rem] border rounded-2xl border-gray-500"}  id={"name"}   type="text" {...register("name" )} />
                 <p>{errors.name?.message}</p>
+
                 <label htmlFor={"email"}> Email </label>
                 <input  className={" input-field  w-[20rem] border rounded-2xl border-gray-500"} id={"email"} type="text" {...register("email" )} />
                 <p>{errors.email?.message}</p>
+
                 <label htmlFor={"password"}>Password</label>
                 <input  className={" input-field  w-[20rem] border rounded-2xl border-gray-500"} id={"password"} type="password" {...register("password")} />
                 <p>{errors.password?.message}</p>
+
                 <label htmlFor={"rePassword"}>Re type Password</label>
                 <input className={" input-field  w-[20rem] border rounded-2xl border-gray-500"} id={"rePassword"} type="password" {...register("rePassword")} />
                 <p>{errors.rePassword?.message}</p>

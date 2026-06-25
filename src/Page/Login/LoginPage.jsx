@@ -9,7 +9,7 @@ function LoginPage() {
             <div className="login-card" aria-labelledby="login-title">
                 <div className="login-card__brand">
                     <span className="login-card__logo">B&B</span>
-                    <span className="login-card__eyebrow">Guest access</span>
+                    <span className="login-card__eyebrow text-orange-500">Guest access</span>
                 </div>
 
                 <div className="login-card__header">
