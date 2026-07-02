@@ -6,9 +6,22 @@ function BookingSuccess() {
 
     const navigate = useNavigate();
     const {bookingId} = useParams();
+    const isValidGuid = (value) =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
 
     const handleDeleteBookingReq = async () => {
+        if (!isValidGuid(bookingId)) {
+            navigate(`/bookingFailed`, {
+                state: {
+                    errorMsg: {
+                        message: "The booking id is invalid. Please open the booking from a valid confirmation link.",
+                    },
+                },
+            });
+            return;
+        }
+
         await DeleteBookingReq(bookingId).then(() => navigate(`/bookingCancelled/${bookingId}`)).catch((err)=>{
             const errorMsg = err;
             console.log("error",errorMsg)

@@ -1,32 +1,76 @@
-﻿import axios from "axios";
+import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 import loggingUtility from "./loggingUtility.js";
+import {createClientTraceId, normalizeApiError} from "./errorUtils.js";
 
 
 export async function PostBookingReq(bookingRequest) {
     const MODULE = "BookingAPI.createBooking";
-    try {
-        const url = `${apiBaseUrl}/api/rooms/${bookingRequest.roomId}/bookings`;
+    const clientTraceId = createClientTraceId();
 
-        loggingUtility.info(MODULE, `Sending booking request for room id ${bookingRequest.roomId}`);
+    try {
+        const RoomId = bookingRequest.RoomId;
+        const url = `${apiBaseUrl}/api/rooms/${RoomId}/bookings`;
+
+        loggingUtility.info(MODULE, `Sending booking request for room id ${RoomId}`);
         loggingUtility.request(MODULE, {
             url,
             payload: bookingRequest,
         });
 
-        const response = await axios.post(url, bookingRequest);
+        const response = await axios.post(url, bookingRequest, {
+            headers: {
+                "X-Client-Trace-Id": clientTraceId,
+            },
+        });
 
         loggingUtility.success(MODULE, response.data);
         return response;
     }
     catch (error)
     {
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            normalizedError
         );
-        throw error.response?.data ?? "Unexpected Error Occurred";
+        throw normalizedError;
+    }
+}
+export async function PostCustomerData(customerData) {
+    const MODULE = "BookingAPI.postCustomerData";
+    const clientTraceId = createClientTraceId();
+
+    try {
+        const url = `${apiBaseUrl}/api/customer/id`;
+
+        loggingUtility.info(MODULE, `Sending customer data ${customerData} to fetch id`);
+        loggingUtility.request(MODULE, {
+            url,
+            payload: customerData,
+        });
+
+        const response = await axios.post(url, customerData, {
+            headers: {
+                "X-Client-Trace-Id": clientTraceId,
+            },
+        });
+
+        loggingUtility.success(MODULE, response.data);
+        return response;
+    }
+    catch (error)
+    {
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+
+        loggingUtility.serverError(
+            MODULE,
+            error.response?.status ?? "NO_RESPONSE",
+            normalizedError
+        );
+        throw normalizedError;
     }
 }
 

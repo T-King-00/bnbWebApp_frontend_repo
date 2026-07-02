@@ -2,9 +2,23 @@ import {useLocation, useNavigate} from "react-router";
 
 function formatBookingError(errorMsg) {
     if (!errorMsg)
-        return "An unexpected error occurred.";
+        return {
+            message: "An unexpected error occurred.",
+            validationErrors: [],
+            traceId: null,
+        };
 
-    return errorMsg.message ;
+    const validationErrors = errorMsg.errors
+        ? Object.entries(errorMsg.errors).flatMap(([field, messages]) =>
+            messages.map((message) => `${field}: ${message}`)
+        )
+        : [];
+
+    return {
+        message: errorMsg.title || errorMsg.message || "The booking request could not be completed.",
+        validationErrors,
+        traceId: errorMsg.traceId || null,
+    };
 }
 
 function BookingFailed() {
@@ -30,13 +44,26 @@ function BookingFailed() {
                         We could not complete your booking
                     </h1>
                     <p  className="mx-auto mt-4 max-w-xl text-base leading-7 text-text-muted sm:text-lg">
-                        {error}
+                        {error.message}
                     </p>
 
-                    <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-text-muted sm:text-lg">
-                        The room may no longer be available, or the booking request could not be completed.
-                        Please review your stay details and try again.
-                    </p>
+                    {error.validationErrors.length > 0 && (
+                        <div className="mx-auto mt-5 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-4 text-left text-sm text-red-800">
+                            <p className="font-black">Validation details</p>
+                            <ul className="mt-2 list-disc space-y-1 pl-5">
+                                {error.validationErrors.map((validationError) => (
+                                    <li key={validationError}>{validationError}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {error.traceId && (
+                        <p className="mx-auto mt-4 max-w-xl rounded-2xl border border-border bg-surface-soft px-4 py-3 text-sm leading-6 text-text-muted">
+                            Support trace ID: <span className="font-mono font-bold text-text">{error.traceId}</span>
+                        </p>
+                    )}
+
 
                     <div className="mt-8 grid gap-3 sm:grid-cols-2">
                         <button

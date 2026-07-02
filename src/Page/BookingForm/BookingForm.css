@@ -179,6 +179,10 @@
     transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
+.payment-option input[type="radio"] {
+    display: none;
+}
+
 .payment-option span {
     font-weight: 900;
 }

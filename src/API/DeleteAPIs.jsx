@@ -1,6 +1,7 @@
-﻿import axios from "axios";
+import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 import loggingUtility from "./loggingUtility.js";
+import {createClientTraceId, normalizeApiError} from "./errorUtils.js";
 
 function getAxiosErrorMessage(error) {
     if (error.response) {
@@ -16,6 +17,8 @@ function getAxiosErrorMessage(error) {
 
 export async function DeleteBookingReq(bookingRequestId) {
     const MODULE = "BookingAPI.deleteBooking";
+    const clientTraceId = createClientTraceId();
+
     try {
         const url = `${apiBaseUrl}/api/bookings/${bookingRequestId}`;
 
@@ -24,21 +27,24 @@ export async function DeleteBookingReq(bookingRequestId) {
             url
         });
 
-        const response = await axios.delete(url);
+        const response = await axios.delete(url, {
+            headers: {
+                "X-Client-Trace-Id": clientTraceId,
+            },
+        });
 
         loggingUtility.success(MODULE, response.data);
         return response;
     }
     catch (error)
     {
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            normalizedError
         );
-        throw error.response?.data ?? "Unexpected Error Occurred";
+        throw normalizedError;
     }
-
-
-
 }

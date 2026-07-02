@@ -1,10 +1,21 @@
 import "./BookingForm.css";
-import {PostBookingReq} from "../../API/PostAPIs.jsx";
+import {PostBookingReq, PostCustomerData} from "../../API/PostAPIs.jsx";
+import {useState} from "react";
 import {useParams, useNavigate, useLocation} from "react-router";
 import {useDateStore} from "../Rooms/Rooms.jsx";
 import {differenceInCalendarDays, parseISO} from "date-fns";
 import {useNoOfGuestsStore} from "../../components/searchBar/SearchBar.jsx";
-function BookingForm() {
+import {create} from "zustand";
+
+
+
+const useCustomerIdStore=create((set)=>({
+    customerId:null,
+    setCustomerId:(customerId)=>set({customerId}),
+
+}))
+
+ function BookingForm() {
 
     const location = useLocation();
 
@@ -16,43 +27,62 @@ function BookingForm() {
     const navigate = useNavigate();
     //using global zustand states
     //  for including date .
-    const checkInDate = useDateStore((state)=> state.checkInDate);
-    const checkOutDate = useDateStore((state)=> state.checkOutDate);
+    const checkInDate = useDateStore((state) => state.checkInDate);
+    const checkOutDate = useDateStore((state) => state.checkOutDate);
     const durationOfStay = checkInDate && checkOutDate
         ? Math.max(0, differenceInCalendarDays(parseISO(checkOutDate), parseISO(checkInDate)))
         : 0;
-    const noOfGuests=useNoOfGuestsStore((state)=> state.noOfGuests);
+    const noOfGuests = useNoOfGuestsStore((state) => state.noOfGuests);
+    const [paymentMethod, setPaymentMethod] = useState("pay on arrival");
 
+    const form = document.getElementById("bookingForm-data");
+
+    const customerId = useCustomerIdStore(state => state.customerId);
+    const setCustomerId = useCustomerIdStore(state => state.setCustomerId);
     const handleBooking = async (event) => {
         event.preventDefault();
 
-        const bookingReq= {
-            Id: 1,
-            roomId: roomId,
-            hotelId: 1,
-            CheckInDate: checkInDate,
-            CheckOutDate: checkOutDate,
-            NumberOfGuests: noOfGuests,
-            Customer: {
-                customerId: 1,
-                FirstName: "John",
-                LastName: "Doe",
-                Email: "john@outloo.com",
-                PhoneNumber: "1234567890",
-            }
-        };
+        const formData = new FormData(event.target);
+        const guestFirstName = formData.get("GuestFirstName");
+        const guestLastName = formData.get("GuestLastName");
+        const guestMobileNumber = formData.get("GuestMobileNumber");
+        const numberOfGuests = formData.get("NumberOfGuests");
+        const guestEmail = formData.get("GuestEmail");
 
-        await PostBookingReq(bookingReq).then((response)=>{
-                     const booking = response.data.bookingResponseDto;
-                     navigate(`${booking.bookingId}/bookingSuccess`)
-        }
-        ).catch((err)=>{
-                 const errorMsg = err;
-                 console.log("error",errorMsg)
-                 navigate(`/bookingFailed`,{state:{errorMsg}})
+        // to add more data to form
+        //use formData.append();
+
+        const customerResponse = await PostCustomerData({
+            FirstName: guestFirstName,
+            LastName: guestLastName,
+            Email: guestEmail,
+            PhoneNumber: guestMobileNumber,
         });
 
+        console.log("CustomerResponse", customerResponse.data.id);
+        setCustomerId(customerResponse.data.id)
 
+        const bookingReq = {
+            CustomerId: customerResponse.data.id,
+            RoomId: roomId,
+            HotelId: 1,
+            CheckInDate: checkInDate,
+            CheckOutDate: checkOutDate,
+            NumberOfGuests: parseInt(numberOfGuests),
+
+        };
+        console.log("Booking req", bookingReq);
+
+        await PostBookingReq(bookingReq).then((response) => {
+                const booking = response.data.bookingResponseDto;
+                console.log("booking", booking);
+                navigate(`${booking.id}/bookingSuccess`)
+            }
+        ).catch((err) => {
+            const errorMsg = err;
+            console.log("error", errorMsg)
+            navigate(`/bookingFailed`, {state: {errorMsg}})
+        });
     }
 
 
@@ -66,7 +96,7 @@ function BookingForm() {
             </div>
 
             <div className="booking-layout">
-                <form className="booking-form" onSubmit={handleBooking}>
+                <form id="bookingForm-data" className="booking-form" onSubmit={handleBooking}>
                     <section className="booking-card" aria-labelledby="guest-details-title">
                         <div className="booking-card__heading">
                             <span className="booking-card__step">01</span>
@@ -84,22 +114,27 @@ function BookingForm() {
 
                         <div className="booking-fields">
                             <div className="booking-field">
-                                <label htmlFor="firstName">First name</label>
-                                <input type="text" id="firstName" name="firstName" placeholder="Tony" />
+                                <label htmlFor="GuestFirstName">First name</label>
+                                <input type="text" id="GuestFirstName" name="GuestFirstName" placeholder="Tony" />
                             </div>
 
                             <div className="booking-field">
-                                <label htmlFor="lastName">Last name</label>
-                                <input type="text" id="lastName" name="lastName" placeholder="Stark" />
+                                <label htmlFor="GuestLastName">Last name</label>
+                                <input type="text" id="GuestLastName" name="GuestLastName" placeholder="Stark" />
                             </div>
 
                             <div className="booking-field booking-field--full">
-                                <label htmlFor="mobileNumber">Mobile number</label>
-                                <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+46 70 123 45 67" />
+                                <label htmlFor="GuestEmail">Email</label>
+                                <input type="email" id="GuestEmail" name="GuestEmail" placeholder="tony@example.com" />
+                            </div>
+
+                            <div className="booking-field booking-field--full">
+                                <label htmlFor="GuestMobileNumber">Mobile number</label>
+                                <input type="tel" id="GuestMobileNumber" name="GuestMobileNumber" placeholder="+46 70 123 45 67" />
                             </div>
                             <div className="booking-field">
                                 <label htmlFor="NumberOfGuests">Number of Guests</label>
-                                <input type="number" id="NumberOfGuests" name="NumberOfGuests" placeholder="1" />
+                                <input type="number" id="NumberOfGuests" name="NumberOfGuests" placeholder="1" value={noOfGuests} readOnly/>
                             </div>
                         </div>
 
@@ -115,17 +150,40 @@ function BookingForm() {
                         </div>
 
                         <div className="payment-options" role="group" aria-label="Payment method">
-                            <button type="button" className="payment-option payment-option--selected">
+                            <label
+                                className={`payment-option ${paymentMethod === "pay with card" ? "payment-option--selected" : ""}`}
+                                htmlFor="pay-wz-card"
+                            >
+                                <input
+                                    type="radio"
+                                    id="pay-wz-card"
+                                    name="PaymentMethod"
+                                    value="pay with card"
+                                    checked={paymentMethod === "pay with card"}
+                                    onChange={(event)=>setPaymentMethod(event.target.value)}
+                                />
                                 <span>Card</span>
                                 <small>Fast confirmation</small>
-                            </button>
-                            <button type="button" className="payment-option">
+                            </label>
+
+                            <label
+                                className={`payment-option ${paymentMethod === "pay on arrival" ? "payment-option--selected" : ""}`}
+                                htmlFor="pay-on-arrival"
+                            >
+                                <input
+                                    type="radio"
+                                    id="pay-on-arrival"
+                                    name="PaymentMethod"
+                                    value="pay on arrival"
+                                    checked={paymentMethod === "pay on arrival"}
+                                    onChange={(event)=>setPaymentMethod(event.target.value)}
+                                />
                                 <span>Pay on arrival</span>
                                 <small>Settle at reception</small>
-                            </button>
+                            </label>
                         </div>
 
-                        <button type="submit" className="booking-submit">
+                        <button value="submit" type="Submit"  className="booking-submit">
                             Confirm booking
                         </button>
 
@@ -171,6 +229,7 @@ function BookingForm() {
             </div>
         </section>
     );
+
 }
 
 export default BookingForm;
