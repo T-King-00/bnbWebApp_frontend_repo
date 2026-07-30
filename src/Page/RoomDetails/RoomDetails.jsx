@@ -34,8 +34,6 @@ function RoomDetails() {
             setIsLoading(false);
             return;
         }
-        setIsLoading(true);
-        setErrorMessage("");
 
         GetRoomDetails(roomId,checkInDate,checkOutDate)
             .then((roomData)=>{

@@ -1,0 +1,12 @@
+﻿{
+    "compilerOptions": {
+    "moduleResolution": "bundler",
+        "resolvePackageJsonImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    }
+}

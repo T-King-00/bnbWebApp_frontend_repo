@@ -1,5 +1,6 @@
 import {GetBookings} from "../../API/GetAPIs.jsx";
 
+import {useState} from "react";
 import{create} from "zustand";
 
 const useBookings = create((set) => ({
@@ -12,11 +13,27 @@ function Bookings() {
 
 
     const {bookings, setBookings} = useBookings(state => state);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasFetched, setHasFetched] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const fetchBooking = async () => {
-        GetBookings()
-            .then(setBookings)
-            .catch(console.error)
+        setIsLoading(true);
+        setHasFetched(true);
+        setErrorMessage("");
+
+        try {
+            const bookingData = await GetBookings();
+            setBookings(bookingData);
+        }
+        catch (error) {
+            console.error(error);
+            setBookings([]);
+            setErrorMessage("Could not load bookings. Check that the backend server is running, then try again.");
+        }
+        finally {
+            setIsLoading(false);
+        }
     }
 
 
@@ -25,8 +42,29 @@ function Bookings() {
             <div>
 
             </div>
-                <p>bookking page </p>
-            <button className={"bg-green-300"} onClick={fetchBooking}>FetchBooking</button>
+                <p>Booking page</p>
+            <button className={"bg-green-300 disabled:opacity-60"} onClick={fetchBooking} disabled={isLoading}>
+                {isLoading ? "Loading bookings..." : "Fetch bookings"}
+            </button>
+
+            {errorMessage && (
+                <p role="alert" className={"text-red-700"}>
+                    {errorMessage}
+                </p>
+            )}
+
+            {isLoading && (
+                <p aria-live="polite">
+                    Loading bookings from the server...
+                </p>
+            )}
+
+            {!isLoading && !errorMessage && hasFetched && bookings.length === 0 && (
+                <p aria-live="polite">
+                    No bookings found.
+                </p>
+            )}
+
             <ul>
                 {bookings.map(booking =>
                     <li key={booking.id ?? booking.bookingId}>

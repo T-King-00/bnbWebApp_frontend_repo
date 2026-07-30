@@ -32,7 +32,7 @@ export async function GetRoomDetails(idAsInt,checkInDateObj,checkOutDateObj) {
             error.response?.status ?? "NO_RESPONSE",
             error.response?.data ?? getAxiosErrorMessage(error)
         );
-        return [];
+        throw error;
     }
 }
 export async function GetAllRooms() {
@@ -55,7 +55,7 @@ export async function GetAllRooms() {
             error.response?.status ?? "NO_RESPONSE",
             error.response?.data ?? getAxiosErrorMessage(error)
         );
-        return [];
+        throw error;
     }
 }
 export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateObj, noOfGuests) {
@@ -81,7 +81,7 @@ export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateOb
             error.response?.status ?? "NO_RESPONSE",
             error.response?.data ?? getAxiosErrorMessage(error)
         );
-        return [];
+        throw error;
     }
 }
 export async function GetBookings(){
@@ -104,6 +104,6 @@ export async function GetBookings(){
             error.response?.status ?? "NO_RESPONSE",
             error.response?.data ?? getAxiosErrorMessage(error)
         );
-        return [];
+        throw error;
     }
 }
