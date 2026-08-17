@@ -1,7 +1,7 @@
 import "./SearchBar.css"
 import {useDateStore} from "../../Page/Rooms/Rooms.jsx";
 import {create} from "zustand";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 
 
 export const useNoOfGuestsStore=create((set) => ({
@@ -18,9 +18,11 @@ function SearchBar({onSearch}) {
     const noOfGuests=useNoOfGuestsStore((state) => state.noOfGuests);
     const [hasSearchChanged, setHasSearchChanged] = useState(false);
 
-    const guestsCount = Number(noOfGuests);
+    //simple calculated values dont need memo
+    const guestsCount =   Number(noOfGuests);
+
     const hasValidSearchValues = Boolean(checkInDate && checkOutDate && guestsCount > 0);
-    const isSearchActive = hasSearchChanged && hasValidSearchValues;
+    const isSearchActive =(hasSearchChanged && hasValidSearchValues)
 
     //event handlers for input date fields and number of guests.
     const handleCheckInDateChange =(event)=>{
@@ -41,7 +43,7 @@ function SearchBar({onSearch}) {
             return;
         }
 
-        onSearch(checkInDate, checkOutDate);
+        onSearch(checkInDate, checkOutDate,guestsCount);
         setHasSearchChanged(false);
     };
 

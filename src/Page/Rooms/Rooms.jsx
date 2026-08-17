@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import { GetAvailableRoomsWithFilter} from "../../API/GetAPIs.jsx";
 import RoomListings from "../../components/Rooms/RoomListings/RoomListings.jsx";
 import SearchBar from "../../components/searchBar/SearchBar.jsx";
@@ -37,27 +37,29 @@ function Rooms() {
 
     const [errorMessage, setErrorMessage] = useState("");
     const  [loadingState, setLoadingState] = useState(false);
-    const  handleSearch = (checkInDate,checkOutDate) => {
-        setRoomsListing([])
-        setErrorMessage("");
-        setLoadingState(true);
-        if(!checkInDate || !checkOutDate)
-        {
-            setErrorMessage("Please select a valid date");
-            setLoadingState(false);
-            return;
-        }
-        GetAvailableRoomsWithFilter(checkInDate, checkOutDate,noOfGuests)
-            .then((rooms) => {setRoomsListing(rooms); } )
-            .catch(err => setErrorMessage(err.message))
-            .finally(()=>setLoadingState(false));
-    }
 
+    const GetAvailableRoomsWithFilterCallBack=useCallback( (checkInDate, checkOutDate,noOfGuests) => {
+        GetAvailableRoomsWithFilter(checkInDate, checkOutDate,noOfGuests)
+            .then((rooms) => {setRoomsListing(rooms); } ).catch(err => setErrorMessage(err.message)).finally(()=>setLoadingState(false));
+    },[setRoomsListing])
+
+    const  handleSearch = useCallback((checkInDate,checkOutDate,noOfGuests) => {
+            setRoomsListing([])
+            setErrorMessage("");
+            setLoadingState(true);
+            if(!checkInDate || !checkOutDate)
+            {
+                setErrorMessage("Please select a valid date");
+                setLoadingState(false);
+                return;
+            }
+            GetAvailableRoomsWithFilterCallBack(checkInDate,checkOutDate,noOfGuests);
+        }
+        ,[GetAvailableRoomsWithFilterCallBack,setRoomsListing,setErrorMessage,setLoadingState])
     useEffect(() => {
         setErrorMessage("");
         setLoadingState(true);
-        GetAvailableRoomsWithFilter(checkInDate, checkOutDate,noOfGuests)
-            .then((rooms) => {setRoomsListing(rooms); } ).catch(err => setErrorMessage(err.message)).finally(()=>setLoadingState(false));
+        GetAvailableRoomsWithFilterCallBack(checkInDate,checkOutDate,noOfGuests);
     }, []);
 
 

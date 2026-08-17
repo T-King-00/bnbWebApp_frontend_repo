@@ -1,6 +1,6 @@
 import "./BookingForm.css";
 import {PostBookingReq, PostCustomerData} from "../../API/PostAPIs.jsx";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {useParams, useNavigate, useLocation} from "react-router";
 import {useDateStore} from "../Rooms/Rooms.jsx";
 import {differenceInCalendarDays, parseISO} from "date-fns";
@@ -39,51 +39,52 @@ const useCustomerIdStore=create((set)=>({
 
     const customerId = useCustomerIdStore(state => state.customerId);
     const setCustomerId = useCustomerIdStore(state => state.setCustomerId);
-    const handleBooking = async (event) => {
-        event.preventDefault();
+    const handleBooking =
+        useCallback(async (event) => {
+            event.preventDefault();
 
-        const formData = new FormData(event.target);
-        const guestFirstName = formData.get("GuestFirstName");
-        const guestLastName = formData.get("GuestLastName");
-        const guestMobileNumber = formData.get("GuestMobileNumber");
-        const numberOfGuests = formData.get("NumberOfGuests");
-        const guestEmail = formData.get("GuestEmail");
+            const formData = new FormData(event.target);
+            const guestFirstName = formData.get("GuestFirstName");
+            const guestLastName = formData.get("GuestLastName");
+            const guestMobileNumber = formData.get("GuestMobileNumber");
+            const numberOfGuests = formData.get("NumberOfGuests");
+            const guestEmail = formData.get("GuestEmail");
 
-        // to add more data to form
-        //use formData.append();
+            // to add more data to form
+            //use formData.append();
 
-        const customerResponse = await PostCustomerData({
-            FirstName: guestFirstName,
-            LastName: guestLastName,
-            Email: guestEmail,
-            PhoneNumber: guestMobileNumber,
-        });
+            const customerResponse = await PostCustomerData({
+                FirstName: guestFirstName,
+                LastName: guestLastName,
+                Email: guestEmail,
+                PhoneNumber: guestMobileNumber,
+            });
 
-        console.log("CustomerResponse", customerResponse.data.id);
-        setCustomerId(customerResponse.data.id)
+            console.log("CustomerResponse", customerResponse.data.id);
+            setCustomerId(customerResponse.data.id)
 
-        const bookingReq = {
-            CustomerId: customerResponse.data.id,
-            RoomId: roomId,
-            HotelId: 1,
-            CheckInDate: checkInDate,
-            CheckOutDate: checkOutDate,
-            NumberOfGuests: parseInt(numberOfGuests),
+            const bookingReq = {
+                CustomerId: customerResponse.data.id,
+                RoomId: roomId,
+                HotelId: 1,
+                CheckInDate: checkInDate,
+                CheckOutDate: checkOutDate,
+                NumberOfGuests: parseInt(numberOfGuests),
 
-        };
-        console.log("Booking req", bookingReq);
+            };
+            console.log("Booking req", bookingReq);
 
-        await PostBookingReq(bookingReq).then((response) => {
-                const booking = response.data.bookingResponseDto;
-                console.log("booking", booking);
-                navigate(`${booking.id}/bookingSuccess`)
-            }
-        ).catch((err) => {
-            const errorMsg = err;
-            console.log("error", errorMsg)
-            navigate(`/bookingFailed`, {state: {errorMsg}})
-        });
-    }
+            await PostBookingReq(bookingReq).then((response) => {
+                    const booking = response.data.bookingResponseDto;
+                    console.log("booking", booking);
+                    navigate(`${booking.id}/bookingSuccess`)
+                }
+            ).catch((err) => {
+                const errorMsg = err;
+                console.log("error", errorMsg)
+                navigate(`/bookingFailed`, {state: {errorMsg}})
+            });
+        },[])
 
 
     return (

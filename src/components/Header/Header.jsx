@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router";
 import { create } from "zustand";
+import {useAuthStore} from "@/store/authStore.js";
 
 
 const useThemeStore = create((set) => ({
@@ -26,7 +27,8 @@ function Header() {
     useEffect(() => {
         document.documentElement.dataset.theme = themeState;
     }, [themeState]);
-    
+    const isAuthenticated=useAuthStore((state) => state.isAuthenticated);
+
 
     const menuButtonClass =
         `inline-flex w-full items-center justify-center rounded-lg   px-5 py-2.5 text-sm font-semibold text-text transition hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 md:w-auto`;
@@ -92,7 +94,29 @@ function Header() {
                                </nav>
                            </div>
                        </li>
+                       {/*Bookings*/}
                        <li className={"my-1 md:my-0"}>
+                           <div className="flex w-full items-center gap-3">
+                               {isAuthenticated ? (
+                                       <NavLink
+                                           to="/bookings"
+                                           className={menuButtonClass}
+                                       >
+                                           Bookings
+                                       </NavLink>):
+                                   (<div></div>)
+                               }
+                           </div>
+                       </li>
+                       {/*logging in and out*/}
+                       <li className={"my-1 md:my-0"}>
+                           {isAuthenticated ? (
+                               <div className="flex w-full items-center gap-3">
+                                   <NavLink
+                                   to="/logout"
+                                   className={menuButtonClass}>Logout</NavLink>
+                                </div>):
+                               (
                            <div className="flex w-full items-center gap-3">
                                <NavLink
                                    to="/login"
@@ -101,16 +125,7 @@ function Header() {
                                    Login
                                </NavLink>
                            </div>
-                       </li>
-                       <li className={"my-1 md:my-0"}>
-                           <div className="flex w-full items-center gap-3">
-                               <NavLink
-                                   to="/bookings"
-                                   className={menuButtonClass}
-                               >
-                                   Bookings
-                               </NavLink>
-                           </div>
+                               )}
                        </li>
                        <li className={"my-1 md:my-0" }>
                            <div className="flex w-full items-center gap-3">

@@ -1,8 +1,9 @@
 import {GetRoomDetails} from "../../API/GetAPIs.jsx";
-import {NavLink, useParams, useNavigate} from "react-router";
+import {NavLink, useParams, useNavigate, useLocation} from "react-router";
 import {create} from "zustand";
-import {useEffect , useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useDateStore} from "../Rooms/Rooms.jsx";
+import {useAuthStore} from "@/store/authStore.js";
 
 
 const useRoom=create((set)=>({
@@ -12,7 +13,8 @@ const useRoom=create((set)=>({
 const roomImage =
     "https://images.trvl-media.com/lodging/16000000/15620000/15617200/15617176/248f37ce.jpg?impolicy=resizecrop&rw=1200&ra=fit";
 function RoomDetails() {
-
+    const isAuth=useAuthStore((state) => state.isAuthenticated);
+    const location = useLocation();
     const {id}=useParams();
     const roomId=Number(id);
     const room=useRoom(state => state.room);
@@ -26,6 +28,7 @@ function RoomDetails() {
 
     const checkInDate = useDateStore((state)=> state.checkInDate);
     const checkOutDate = useDateStore((state)=> state.checkOutDate);
+
 
     useEffect(() => {
         //acts as a render guard to prevent null object and string
@@ -81,6 +84,21 @@ function RoomDetails() {
     const basePrice = room.basePrice ?? "Contact us";
     const amenities = room.amenities?.length ? room.amenities : ["Breakfast included", "Free Wi-Fi", "Private bath"];
 
+    const handleBookButton=()=>{
+        if (isAuth) {
+            navigate(`/rooms/${room.id}/bookingForm`,{state:{room}})
+        }
+        else
+        {
+            navigate("/login",{
+                state:{
+                    message:"Please login to book this room",
+                    from:location.pathname ,
+                }
+            })
+
+        }
+    }
     return (
         <section className="bg-bg text-text">
             <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:px-8 lg:py-14">
@@ -141,12 +159,11 @@ function RoomDetails() {
                                 <p>Breakfast included</p>
                                 <p>Local host support</p>
                             </div>
-                            <NavLink
-                                to={`/rooms/${room.id}/bookingForm`}
-                                className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 font-black text-primary-text shadow-lg shadow-cyan-900/10 transition hover:-translate-y-0.5 hover:bg-primary-hover"
-                            state={{room}}>
+                            <button
+                                onClick={handleBookButton}
+                                className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 font-black text-primary-text shadow-lg shadow-cyan-900/10 transition hover:-translate-y-0.5 hover:bg-primary-hover">
                                 Book this room
-                            </NavLink>
+                            </button>
                             <button
                                 type="button"
                                 className="mt-4 inline-flex w-full items-center justify-center rounded-2xl border border-border bg-surface px-5 py-3 font-black text-text-muted shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:bg-surface-soft hover:text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring"

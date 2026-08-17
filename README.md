@@ -1,202 +1,161 @@
-# B&B Web App Frontend
+﻿# B&B Web App Frontend
 
-React frontend for a bed and breakfast room booking project. The app lets guests browse rooms, inspect room details, search availability by date range, and move toward a booking flow.
+React frontend for a bed-and-breakfast booking application. Guests can search for available rooms, review room details, sign in, create a booking, view bookings, and cancel a confirmed reservation.
+
+## Current Features
+
+- Responsive shared layout with header, footer, mobile navigation, and light/dark themes.
+- Room availability search by check-in date, check-out date, and guest count.
+- Loading, API error, and empty-result states on the rooms page.
+- Room details with capacity, amenities, nightly price, and calculated stay information.
+- Cookie-based login with loading/error feedback and return-to-previous-page navigation.
+- Zustand authentication state with conditional Login, Logout, and Bookings navigation.
+- Authentication check before entering the booking form.
+- Booking creation using customer details, selected room, dates, and guest count.
+- Booking success and failure pages, including backend validation messages and trace IDs.
+- Booking cancellation with booking ID validation and a cancellation confirmation page.
+- Bookings list with loading, error, and empty states.
+- Development-only API request logging.
+- Local and Docker-based development workflows.
 
 ## Tech Stack
 
 - React 19
-- Vite
-- React Router
-- Tailwind CSS
-- Zustand
+- Vite 8
+- React Router 7
+- Tailwind CSS 4
+- Zustand 5
 - Axios
-- React Hook Form
-- Yup
+- React Hook Form and Yup
+- date-fns
+- Lucide React
 
-## Environment
+## Prerequisites
 
-Create a `.env` file with the backend base URL:
+- Node.js and npm for local development, or Docker Desktop with Docker Compose.
+- The B&B backend API must be running and reachable from the browser.
+
+The Docker image uses Node 26 Alpine. If you run the app locally, use a Node.js version supported by Vite 8.
+
+## Environment Setup
+
+Create a `.env` file in the project root and add the backend API base URL :
 
 ```env
-VITE_API_BASE_URL=https://your-backend-url/api
+VITE_API_BASE_URL=https://localhost:7171
 ```
 
-The API helpers read this value from:
+Use the backend server origin without a trailing `/api`. The API modules append endpoint paths such as `/rooms` and `/api/bookings` themselves.
 
-```js
-import.meta.env.VITE_API_BASE_URL
+Login sends cookies with `withCredentials: true`. The backend must therefore allow the frontend origin in its CORS configuration and permit credentialed requests.
+
+## Run Locally
+
+Install dependencies and start Vite:
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
+
+## Run With Docker Compose
+
+Build and start the development container:
+
+```bash
+docker compose up --build
+```
+
+The Compose configuration:
+
+- publishes the app at [http://localhost:5173](http://localhost:5173);
+- mounts the project into `/app` for live updates;
+- keeps container dependencies in a named `node_modules` volume; and
+- enables file polling for reliable change detection.
+
+Useful commands:
+
+```bash
+docker compose up -d
+docker compose logs -f frontend
+docker compose down
+```
+
+To use Docker without Compose:
+
+```bash
+docker build -t frontend_bandbwebapp:latest .
+docker run --rm -p 5173:5173 --env-file .env frontend_bandbwebapp:latest
 ```
 
 ## Available Scripts
 
-```bash
-npm run dev
-npm run build
-npm run lint
-npm run preview
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Create a production build in `dist/` |
+| `npm run lint` | Run ESLint across the project |
+| `npm run preview` | Preview the production build locally |
+
+## Application Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Home page |
+| `/rooms` | Search and browse available rooms |
+| `/rooms/:id` | View room details |
+| `/rooms/:id/bookingForm` | Enter guest details and create a booking |
+| `/rooms/:id/bookingForm/:bookingId/bookingSuccess` | View booking confirmation and cancel the booking |
+| `/bookingFailed` | Display booking/API failure details |
+| `/bookingCancelled/:bookingId` | Confirm successful cancellation |
+| `/bookings` | Fetch and display bookings |
+| `/login` | Sign in |
+| `/logout` | Clear frontend authentication state |
+
+Routes are currently defined in `src/main.jsx` and rendered inside the shared `App` layout.
+
+## Backend API Endpoints
+
+All endpoints are relative to `VITE_API_BASE_URL`.
+
+| Method | Endpoint | Used for |
+| --- | --- | --- |
+| `GET` | `/rooms?checkInDate={date}&checkOutDate={date}&numberOfGuests={count}` | Search available rooms |
+| `GET` | `/rooms/{id}?checkInDate={date}&checkOutDate={date}` | Load room details and stay pricing |
+| `GET` | `/allRooms` | Fetch all rooms (helper available) |
+| `POST` | `/api/user/login?useCookies=true` | Sign in with a cookie-based session |
+| `POST` | `/api/customer/id` | Create or resolve the booking customer |
+| `POST` | `/api/rooms/{roomId}/bookings` | Create a booking |
+| `GET` | `/api/bookings` | Fetch bookings |
+| `DELETE` | `/api/bookings/{bookingId}` | Cancel a booking |
+
+Dates are sent as `yyyy-MM-dd`, matching the backend's `.NET DateOnly` query format. Booking create/delete requests include an `X-Client-Trace-Id` header; normalized failures preserve the backend trace ID when supplied.
+
+## Project Structure
+
+```text
+src/
+├── API/                 # Axios requests, error normalization, and logging
+├── components/          # Shared header, footer, room, search, and UI components
+├── Page/                # Route-level pages and booking status screens
+├── store/               # Shared authentication state
+├── App.jsx              # Shared application layout
+├── index.css            # Tailwind import and theme variables
+└── main.jsx             # Router configuration and application entry point
 ```
 
-## Done Features
+## Troubleshooting
 
-### Routing And Layout
+- **Rooms do not load:** confirm the backend is running and `VITE_API_BASE_URL` contains the correct origin.
 
-- Main app shell with shared `Header`, `Footer`, and route outlet.
-- React Router setup for:
-  - `/` home page
-  - `/Login` login page
-  - `/rooms` rooms listing page
-  - `/rooms/:id` room details page
-  - `/rooms/:id/bookingForm` booking form page
-- Basic route error fallback message.
+## Next Steps
 
-### Home Page
-
-- Landing page with B&B introduction.
-- Call-to-action link to browse rooms.
-- Feature cards explaining room browsing, details, and booking flow.
-
-### Rooms Page
-
-- Fetches and renders rooms from the backend.
-- Uses Zustand to store room list state.
-- Includes a search bar for check-in and check-out dates.
-- Search button calls the date-range room availability API.
-- Room list rendering is separated into `RoomListings` and `CardItem` components.
-
-### Room Card
-
-- Displays room image, type, description, guest capacity, size, and base price.
-- Links each room card to its room details page.
-- Uses defensive rendering for missing `beds` and `price` data to avoid route crashes.
-
-### Room Details Page
-
-- Reads room id from the route parameter.
-- Fetches room details from the backend.
-- Handles loading state.
-- Handles invalid or missing room errors.
-- Displays room overview, capacity, size, amenities, and price.
-- Provides a booking link.
-
-### Booking Form Page
-
-- Static booking form layout exists.
-- Guest details fields are present.
-- Payment method UI is present.
-- Booking summary UI is present.
-
-### Login Page
-
-- Static login page layout exists.
-- Email and password fields are present.
-- Remember-me and forgot-password UI are present.
-
-### Registration Form
-
-- Registration form component exists.
-- Uses React Hook Form and Yup validation.
-- Validates name, email, password, and repeated password.
-
-### Styling
-
-- Tailwind CSS is configured through `@import "tailwindcss"`.
-- Theme variables are defined in `src/index.css`.
-- Light and dark theme color variables exist.
-- Room, login, booking, and search UI have custom styling.
-
-## API Calls Currently Used
-
-### Get Room Details
-
-```js
-GET /rooms/{id}
-```
-
-Used by the room details page.
-
-### Get All Rooms
-
-```js
-GET /allRooms
-```
-
-Used by the rooms page initial load.
-
-### Get Available Rooms By Date Range
-
-```js
-GET /rooms?checkInDate=yyyy-MM-dd&checkOutDate=yyyy-MM-dd
-```
-
-Used by the rooms search feature.
-
-The date inputs return strings in `yyyy-MM-dd` format, which matches the expected `.NET DateOnly` query format.
-
-## Not Done Yet
-
-### Booking Flow
-
-- Booking form is currently static.
-- Booking form is not connected to backend booking creation.
-- Room id is not correctly passed into the booking form route yet.
-- Booking summary uses hard-coded data.
-- No booking confirmation state exists yet.
-
-### Authentication
-
-- Login page is currently static.
-- Login form is not connected to backend authentication.
-- No auth state is stored.
-- No protected routes exist yet.
-- Registration form is not wired into routing or backend registration.
-
-### Search And Availability
-
-- Date-range search is partially implemented.
-- Need user-facing validation when dates are missing.
-- Need validation that check-out date is after check-in date.
-- Need loading and error states while searching rooms.
-- Need a clear empty-state message when no rooms are available.
-
-### Room Data Robustness
-
-- Backend room response shape should be confirmed.
-- `beds`, `price`, and `amenities` fields should have consistent API contracts.
-- Room card and room details should use the same display rules for guests and price.
-
-### Error Handling
-
-- API helpers currently return empty arrays for several errors.
-- Error handling should distinguish between network errors, validation errors, and empty results.
-- Route error page should be replaced with a proper styled error screen.
-
-### Code Organization
-
-- Zustand stores are currently defined inside page files.
-- Stores should eventually move to separate files, for example `src/store/roomStore.js` and `src/store/searchStore.js`.
-- API helper file should be renamed or split by domain, for example `roomApi.js`.
-- Unused imports should be cleaned up.
-
-### UI Improvements
-
-- Add loading skeletons for room list search.
-- Add empty-state card for no available rooms.
-- Add form validation messages in the search bar.
-- Improve mobile spacing and button alignment where needed.
-- Replace placeholder room images with backend-provided images when available.
-
-## Known Issues
-
-- The route error page can appear if backend room data is missing fields that the UI expects.
-- `GetAvailableRoomsWithinSpecificDataes` contains a typo in the function name.
-- The room details booking link currently uses `/rooms/:id/bookingForm` literally instead of inserting the actual room id.
-- The backend must support `/allRooms` for initial room loading and `/rooms?checkInDate=...&checkOutDate=...` for date search.
-
-## Learning Notes
-
-- React Router route structure and nested layout rendering.
-- Zustand state management for shared states.
-- React Hook Form with Yup validation.
-- Tailwind CSS theme variables and component styling.
-- Axios API helper functions.
-- Frontend Side, and backend parameters matching datatypes.
+- Restore authentication state from the backend and add protected routes.
+- Connect logout and registration to backend endpoints.
+- Add booking form and date-range validation.
+- Make the booking form resilient to direct navigation and page refreshes.
+- Improve the bookings management UI and fetch it automatically.
+- Move remaining shared stores out of page/component modules.
+- Add automated component and end-to-end tests.

@@ -1,4 +1,11 @@
-﻿FROM ubuntu:latest
-LABEL authors="tony_"
+﻿FROM node:26-alpine
+WORKDIR /app
+#install dependencies and packages
+COPY package*.json ./
+RUN npm ci
 
-ENTRYPOINT ["top", "-b"]
+#copy source code
+COPY . .
+EXPOSE 5173
+
+CMD ["npm","run","dev", "--","--host", "0.0.0.0"]

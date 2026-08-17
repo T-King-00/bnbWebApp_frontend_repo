@@ -17,6 +17,7 @@ import Bookings from "./Page/Bookings/Bookings.jsx";
 import BookingSuccess from "./Page/BookingStatus/BookingSuccess.jsx";
 import BookingFailed from "./Page/BookingStatus/BookingFailed.jsx";
 import BookDeletingSuccess from "./Page/BookingStatus/BookDeletingSuccess.jsx";
+import {Logout} from "@/Page/Login/Logout.jsx";
 
 
 
@@ -27,6 +28,7 @@ const router= createBrowserRouter(createRoutesFromElements(
     >
         <Route path={"/"}index element={<HomePage/>}/>
         <Route path={"/Login"} element={<LoginPage/>}/>
+        <Route path={"/Logout"} element={<Logout/>}/>
         <Route path={"/rooms"} element={<Rooms/>}/>
         <Route path={"/rooms/:id"} element={<RoomDetails/>}/>
         <Route path={"/rooms/:id/bookingForm"} element={<BookingForm/>}/>

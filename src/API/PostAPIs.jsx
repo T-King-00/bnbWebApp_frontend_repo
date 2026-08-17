@@ -74,6 +74,43 @@ export async function PostCustomerData(customerData) {
     }
 }
 
+export async function Login(userAccount) {
+    const MODULE = "BookingAPI.login";
+    const clientTraceId = createClientTraceId();
+
+
+    try {
+        const url = `${apiBaseUrl}/api/user/login?useCookies=true`;
+
+        loggingUtility.info(MODULE, `Sending user account ${userAccount.email} to login`);
+        loggingUtility.request(MODULE, {
+            url,
+            payload: userAccount,
+        });
+
+        const response = await axios.post(url, userAccount, {
+            headers: {
+                "X-Client-Trace-Id": clientTraceId,
+            },
+            withCredentials: true,
+        });
+
+        loggingUtility.success(MODULE, response.data);
+        return response;
+    }
+    catch (error)
+    {
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+
+        loggingUtility.serverError(
+            MODULE,
+            error.response?.status ?? "NO_RESPONSE",
+            normalizedError
+        );
+        throw normalizedError;
+    }
+
+}
 
 function getAxiosErrorMessage(error) {
     if (error.response) {
