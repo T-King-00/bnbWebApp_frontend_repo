@@ -36,11 +36,20 @@ function Rooms() {
     const setRoomsListing=useRoomsList(state => state.setRoomsListing);
 
     const [errorMessage, setErrorMessage] = useState("");
+    const [errorCode, setErrorCode] = useState("");
+
     const  [loadingState, setLoadingState] = useState(false);
 
     const GetAvailableRoomsWithFilterCallBack=useCallback( (checkInDate, checkOutDate,noOfGuests) => {
         GetAvailableRoomsWithFilter(checkInDate, checkOutDate,noOfGuests)
-            .then((rooms) => {setRoomsListing(rooms); } ).catch(err => setErrorMessage(err.message)).finally(()=>setLoadingState(false));
+            .then((rooms) => {setRoomsListing(rooms); } ).catch(err => {
+                const responseData = err.response?.data;
+                const responseMessage = typeof responseData === "string"
+                    ? responseData
+                    : responseData ? JSON.stringify(responseData) : "";
+                setErrorMessage([responseMessage, err.message].filter(Boolean).join("\n"));
+                setErrorCode(err.code);
+            }).finally(()=>setLoadingState(false));
     },[setRoomsListing])
 
     const  handleSearch = useCallback((checkInDate,checkOutDate,noOfGuests) => {
@@ -58,6 +67,7 @@ function Rooms() {
         ,[GetAvailableRoomsWithFilterCallBack,setRoomsListing,setErrorMessage,setLoadingState])
     useEffect(() => {
         setErrorMessage("");
+        setErrorCode("");
         setLoadingState(true);
         GetAvailableRoomsWithFilterCallBack(checkInDate,checkOutDate,noOfGuests);
     }, []);
@@ -94,10 +104,13 @@ function Rooms() {
                         <h2 className="mt-3 text-2xl font-black text-text">
                         No rooms are available at the moment.
                         </h2>
-                        <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-text-muted">
+                        {(errorCode >= 500) &&(
+                            <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-text-muted">
                             We could not connect to the server. Please try again.
-                        </p>
-                        <p className="mt-2 text-sm text-red-600">
+                            </p>
+                        )}
+
+                        <p className="mt-2 whitespace-pre-line text-sm text-red-600">
                                 {errorMessage}
                         </p>
                     </div>

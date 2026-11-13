@@ -12,11 +12,17 @@ const useRoom=create((set)=>({
 }))
 const roomImage =
     "https://images.trvl-media.com/lodging/16000000/15620000/15617200/15617176/248f37ce.jpg?impolicy=resizecrop&rw=1200&ra=fit";
+function isValidGuid(value) {
+    const guidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    return typeof value === "string" && guidRegex.test(value);
+}
 function RoomDetails() {
     const isAuth=useAuthStore((state) => state.isAuthenticated);
     const location = useLocation();
     const {id}=useParams();
-    const roomId=Number(id);
+    const roomId=id;
     const room=useRoom(state => state.room);
     const setRoom=useRoom(state => state.setRoom);
 
@@ -30,9 +36,11 @@ function RoomDetails() {
     const checkOutDate = useDateStore((state)=> state.checkOutDate);
 
 
+
+
     useEffect(() => {
         //acts as a render guard to prevent null object and string
-        if (!Number.isInteger(roomId) ) {
+        if (!isValidGuid(roomId) ) {
             setErrorMessage("Invalid room id.");
             setIsLoading(false);
             return;
@@ -67,12 +75,14 @@ function RoomDetails() {
                         <p className="text-sm font-black uppercase tracking-[0.25em] text-primary">Room details</p>
                         <h1 className="mt-3 text-3xl font-black tracking-tight">Unable to show this room</h1>
                         <p className="mt-3 text-text-muted">{ "The room could not be found."}</p>
+                        <p className="mt-3 text-text-muted">{errorMessage}</p>
                         <NavLink
                             to="/rooms"
                             className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 font-bold text-primary-text transition hover:bg-primary-hover"
                         >
                             Back to rooms
                         </NavLink>
+
                     </div>
                 </section>
         );

@@ -5,7 +5,7 @@ import {NavLink} from "react-router";
 function CardItem(props) {
     const room=props.data;
     const guestCount = room.maxGuestsAmount ?? "Unknown";
-    const basePrice = room.basePrice ??  "N/A";
+    const basePrice = room.pricePerNight ??  "N/A";
     console.log(room);
     return (
         

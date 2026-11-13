@@ -10,7 +10,7 @@ export async function PostBookingReq(bookingRequest) {
 
     try {
         const RoomId = bookingRequest.RoomId;
-        const url = `${apiBaseUrl}/api/rooms/${RoomId}/bookings`;
+        const url = `${apiBaseUrl}/rooms/${RoomId}/bookings`;
 
         loggingUtility.info(MODULE, `Sending booking request for room id ${RoomId}`);
         loggingUtility.request(MODULE, {
@@ -19,6 +19,7 @@ export async function PostBookingReq(bookingRequest) {
         });
 
         const response = await axios.post(url, bookingRequest, {
+            withCredentials:true,
             headers: {
                 "X-Client-Trace-Id": clientTraceId,
             },
@@ -44,8 +45,7 @@ export async function PostCustomerData(customerData) {
     const clientTraceId = createClientTraceId();
 
     try {
-        const url = `${apiBaseUrl}/api/customer/id`;
-
+        const url = `${apiBaseUrl}/customer/id`;
         loggingUtility.info(MODULE, `Sending customer data ${customerData} to fetch id`);
         loggingUtility.request(MODULE, {
             url,
@@ -53,6 +53,7 @@ export async function PostCustomerData(customerData) {
         });
 
         const response = await axios.post(url, customerData, {
+        withCredentials:true,
             headers: {
                 "X-Client-Trace-Id": clientTraceId,
             },
@@ -77,10 +78,8 @@ export async function PostCustomerData(customerData) {
 export async function Login(userAccount) {
     const MODULE = "BookingAPI.login";
     const clientTraceId = createClientTraceId();
-
-
     try {
-        const url = `${apiBaseUrl}/api/user/login?useCookies=true`;
+        const url = `${apiBaseUrl}/user/login?useCookies=true`;
 
         loggingUtility.info(MODULE, `Sending user account ${userAccount.email} to login`);
         loggingUtility.request(MODULE, {
@@ -114,7 +113,7 @@ export async function Login(userAccount) {
 
 function getAxiosErrorMessage(error) {
     if (error.response) {
-        return `Status ${error.response.status}`;
+        return `Status ${error.response.status} ${error.response.data}`;
     }
 
     if (error.request) {
