@@ -2,6 +2,7 @@ import {GetBookings} from "../../API/GetAPIs.jsx";
 
 import {useState} from "react";
 import{create} from "zustand";
+import {number} from "yup";
 
 const useBookings = create((set) => ({
     bookings: [],
@@ -66,15 +67,20 @@ function Bookings() {
             )}
 
             <ul>
+                <br/>
                 {bookings.map(booking =>
                     <li key={booking.id ?? booking.bookingId}>
                         <p>Booking Id: {booking.id ?? booking.bookingId}</p>
                         <p>Check-in Date: {booking.checkInDate}</p>
                         <p>Check-out Date: {booking.checkOutDate}</p>
-                        <p>Guests: {booking.guests}</p>
+                        <p>Amount of Nights: {booking.amountOfNights}</p>
+
+                        <p>Guests: {booking.numberOfGuests}</p>
                         <p>Room Type: {booking.roomType}</p>
-                        <p>Room Price: {booking.roomPrice}</p>
+                        <p>Payment Choice: {booking.paymentMethod}</p>
+                        <p>Payment Deadline: {booking.paymentDeadline}</p>
                         <p>Status: {booking.status}</p>
+                        <br/>
                     </li>)}
 
             </ul>

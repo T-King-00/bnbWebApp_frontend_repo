@@ -1,12 +1,11 @@
 import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 import loggingUtility from "./loggingUtility.js";
-import {createClientTraceId, normalizeApiError} from "./errorUtils.js";
+import {getServerTraceId, normalizeApiError} from "./errorUtils.js";
 
 
 export async function PostBookingReq(bookingRequest) {
     const MODULE = "BookingAPI.createBooking";
-    const clientTraceId = createClientTraceId();
 
     try {
         const RoomId = bookingRequest.RoomId;
@@ -20,29 +19,26 @@ export async function PostBookingReq(bookingRequest) {
 
         const response = await axios.post(url, bookingRequest, {
             withCredentials:true,
-            headers: {
-                "X-Client-Trace-Id": clientTraceId,
-            },
         });
 
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response;
     }
     catch (error)
     {
-        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error));
 
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            normalizedError
+            normalizedError,
+            normalizedError.traceId
         );
         throw normalizedError;
     }
 }
 export async function PostCustomerData(customerData) {
     const MODULE = "BookingAPI.postCustomerData";
-    const clientTraceId = createClientTraceId();
 
     try {
         const url = `${apiBaseUrl}/customer/id`;
@@ -53,23 +49,22 @@ export async function PostCustomerData(customerData) {
         });
 
         const response = await axios.post(url, customerData, {
-        withCredentials:true,
-            headers: {
-                "X-Client-Trace-Id": clientTraceId,
-            },
+            withCredentials: true,
         });
 
-        loggingUtility.success(MODULE, response.data);
+
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response;
     }
     catch (error)
     {
-        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error));
 
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            normalizedError
+            normalizedError,
+            normalizedError.traceId
         );
         throw normalizedError;
     }
@@ -77,7 +72,6 @@ export async function PostCustomerData(customerData) {
 
 export async function Login(userAccount) {
     const MODULE = "BookingAPI.login";
-    const clientTraceId = createClientTraceId();
     try {
         const url = `${apiBaseUrl}/user/login?useCookies=true`;
 
@@ -88,23 +82,22 @@ export async function Login(userAccount) {
         });
 
         const response = await axios.post(url, userAccount, {
-            headers: {
-                "X-Client-Trace-Id": clientTraceId,
-            },
             withCredentials: true,
         });
 
-        loggingUtility.success(MODULE, response.data);
+
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response;
     }
     catch (error)
     {
-        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error));
 
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            normalizedError
+            normalizedError,
+            normalizedError.traceId
         );
         throw normalizedError;
     }

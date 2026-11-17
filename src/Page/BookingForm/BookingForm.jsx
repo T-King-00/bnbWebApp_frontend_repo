@@ -1,19 +1,11 @@
 import "./BookingForm.css";
-import {PostBookingReq, PostCustomerData} from "../../API/PostAPIs.jsx";
-import {useCallback, useState} from "react";
+import {PostBookingReq} from "../../API/PostAPIs.jsx";
+import {useCallback, useRef, useState} from "react";
 import {useParams, useNavigate, useLocation} from "react-router";
 import {useDateStore} from "../Rooms/Rooms.jsx";
 import {differenceInCalendarDays, parseISO} from "date-fns";
 import {useNoOfGuestsStore} from "../../components/searchBar/SearchBar.jsx";
-import {create} from "zustand";
 
-
-
-const useCustomerIdStore=create((set)=>({
-    customerId:null,
-    setCustomerId:(customerId)=>set({customerId}),
-
-}))
 
  function BookingForm() {
 
@@ -21,7 +13,7 @@ const useCustomerIdStore=create((set)=>({
 
     const room = location.state?.room;
     const {id} = useParams();
-    const roomId = Number(id);
+    const roomId = id;
 
     //for backward navigation
     const navigate = useNavigate();
@@ -37,34 +29,55 @@ const useCustomerIdStore=create((set)=>({
 
     const form = document.getElementById("bookingForm-data");
 
-    const customerId = useCustomerIdStore(state => state.customerId);
-    const setCustomerId = useCustomerIdStore(state => state.setCustomerId);
-    const handleBooking =
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    //prevents duplicate requests
+    const submissionInProgress = useRef(false);
+     const handleBooking =
         useCallback(async (event) => {
             event.preventDefault();
+            // Block another submission immediately.
+            if (isSubmitting) return;
+            if (submissionInProgress.current) return;
 
-            const formData = new FormData(event.target);
+            const formData = new FormData(event.currentTarget);
+            setIsSubmitting(true);
+            submissionInProgress.current = true;
+
+
+
+
             const guestFirstName = formData.get("GuestFirstName");
             const guestLastName = formData.get("GuestLastName");
             const guestMobileNumber = formData.get("GuestMobileNumber");
             const numberOfGuests = formData.get("NumberOfGuests");
             const guestEmail = formData.get("GuestEmail");
+            const guestBirthDate = formData.get("GuestBirthDate");
 
-            // to add more data to form
-            //use formData.append();
-
-            const customerResponse = await PostCustomerData({
+            const GuestData = {
                 FirstName: guestFirstName,
                 LastName: guestLastName,
                 Email: guestEmail,
                 PhoneNumber: guestMobileNumber,
+                BirthDate: guestBirthDate,
+            };
+
+            // to add more data to form
+            //use formData.append();
+
+          /*  const customerResponse = await PostCustomerData({
+                FirstName: guestFirstName,
+                LastName: guestLastName,
+                Email: guestEmail,
+                PhoneNumber: Number(guestMobileNumber),
             });
 
             console.log("CustomerResponse", customerResponse.data.id);
-            setCustomerId(customerResponse.data.id)
-
+            setCustomerId(customerResponse.data.id)*/
+            let GuestList=[];
+            GuestList.push(GuestData);
             const bookingReq = {
-                CustomerId: customerResponse.data.id,
+               Guests: GuestList,
                 RoomId: roomId,
                 HotelId: 1,
                 CheckInDate: checkInDate,
@@ -81,7 +94,7 @@ const useCustomerIdStore=create((set)=>({
                 }
             ).catch((err) => {
                 const errorMsg = err;
-                console.log("error", errorMsg)
+                console.log("Error", errorMsg)
                 navigate(`/bookingFailed`, {state: {errorMsg}})
             });
         },[])
@@ -128,7 +141,10 @@ const useCustomerIdStore=create((set)=>({
                                 <label htmlFor="GuestEmail">Email</label>
                                 <input type="email" id="GuestEmail" name="GuestEmail" placeholder="tony@example.com" />
                             </div>
-
+                            <div className="booking-field booking-field--full">
+                                <label htmlFor="GuestBirthDate">Birth Date</label>
+                                <input type="date" id="GuestBirthDate" name="GuestBirthDate" placeholder="" />
+                            </div>
                             <div className="booking-field booking-field--full">
                                 <label htmlFor="GuestMobileNumber">Mobile number</label>
                                 <input type="tel" id="GuestMobileNumber" name="GuestMobileNumber" placeholder="+46 70 123 45 67" />
@@ -186,6 +202,10 @@ const useCustomerIdStore=create((set)=>({
 
                         <button value="submit" type="Submit"  className="booking-submit">
                             Confirm booking
+                        </button>
+
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Booking…" : "Confirm booking"}
                         </button>
 
                         <button type="button" className="booking-cancel" onClick={()=>navigate(-1)}>

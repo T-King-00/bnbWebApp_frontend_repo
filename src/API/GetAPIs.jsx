@@ -1,6 +1,7 @@
 import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 import loggingUtility from "./loggingUtility.js";
+import {getServerTraceId} from "./errorUtils.js";
 
 function getAxiosErrorMessage(error) {
     if (error.response) {
@@ -21,8 +22,7 @@ export async function GetRoomDetails(idAsInt,checkInDateObj,checkOutDateObj) {
         loggingUtility.request(MODULE, url);
 
         const response = await axios.get(url);
-
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response.data;
     }
     catch (error)
@@ -30,7 +30,8 @@ export async function GetRoomDetails(idAsInt,checkInDateObj,checkOutDateObj) {
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            error.response?.data ?? getAxiosErrorMessage(error),
+            getServerTraceId(error.response)
         );
         throw error;
     }
@@ -45,7 +46,7 @@ export async function GetAllRooms() {
 
         const response = await axios.get(url);
 
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response.data;
     }
     catch (error)
@@ -53,7 +54,8 @@ export async function GetAllRooms() {
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            error.response?.data ?? getAxiosErrorMessage(error),
+            getServerTraceId(error.response)
         );
         throw error;
     }
@@ -71,7 +73,7 @@ export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateOb
 
         const response = await axios.get(url);
 
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response.data;
     }
     catch (error)
@@ -79,7 +81,8 @@ export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateOb
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            error.response?.data ?? getAxiosErrorMessage(error),
+            getServerTraceId(error.response)
         );
         throw error;
     }
@@ -87,14 +90,14 @@ export async function GetAvailableRoomsWithFilter(checkInDateObj, checkOutDateOb
 export async function GetBookings(){
     const MODULE = "GetAPI.GetBookings";
     try {
-        const url = `${apiBaseUrl}/bookings/`;
+        const url = `${apiBaseUrl}/bookings`;
 
         loggingUtility.info(MODULE, "Fetching bookings from backend server");
         loggingUtility.request(MODULE, url);
 
-        const response = await axios.get(url,{withCredentials:true});
+        const response = await axios.get(url, {withCredentials: true});
 
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response.data;
     }
     catch (error)
@@ -102,7 +105,8 @@ export async function GetBookings(){
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            error.response?.data ?? getAxiosErrorMessage(error)
+            error.response?.data ?? getAxiosErrorMessage(error),
+            getServerTraceId(error.response)
         );
         throw error;
     }

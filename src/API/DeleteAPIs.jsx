@@ -1,7 +1,7 @@
 import axios from "axios";
 import {apiBaseUrl} from "./apiBase.js";
 import loggingUtility from "./loggingUtility.js";
-import {createClientTraceId, normalizeApiError} from "./errorUtils.js";
+import {getServerTraceId, normalizeApiError} from "./errorUtils.js";
 
 function getAxiosErrorMessage(error) {
     if (error.response) {
@@ -17,7 +17,6 @@ function getAxiosErrorMessage(error) {
 
 export async function DeleteBookingReq(bookingRequestId) {
     const MODULE = "BookingAPI.deleteBooking";
-    const clientTraceId = createClientTraceId();
 
     try {
         const url = `${apiBaseUrl}/api/bookings/${bookingRequestId}`;
@@ -27,23 +26,20 @@ export async function DeleteBookingReq(bookingRequestId) {
             url
         });
 
-        const response = await axios.delete(url, {
-            headers: {
-                "X-Client-Trace-Id": clientTraceId,
-            },
-        });
+        const response = await axios.delete(url);
 
-        loggingUtility.success(MODULE, response.data);
+        loggingUtility.success(MODULE, response.data, getServerTraceId(response));
         return response;
     }
     catch (error)
     {
-        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error), clientTraceId);
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error));
 
         loggingUtility.serverError(
             MODULE,
             error.response?.status ?? "NO_RESPONSE",
-            normalizedError
+            normalizedError,
+            normalizedError.traceId
         );
         throw normalizedError;
     }
