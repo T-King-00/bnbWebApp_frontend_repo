@@ -1,21 +1,24 @@
 import './App.css'
-import { Outlet } from 'react-router'
+import {Outlet, useLocation} from 'react-router'
 
 import RoomListings from "./components/Rooms/RoomListings/RoomListings.jsx";
 import Header from "./components/Header/Header.jsx";
 import "./API/apiBase.js"
 
 import Footer from "./components/Footer/Footer.jsx";
+import {useLayoutEffect} from "react";
 
 
 
 function App() {
-
-    
+    const { key } = useLocation();
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }, [key]);
     return (
         <div id={"App"} >
             <Header></Header>
-            <main className={"min-h-[calc(72vh-88px)] bg-bg px-4 py-10 text-text "}>
+            <main className={"min-h-[calc(72vh-88px)] bg-bg   text-text "}>
                 <Outlet/>
             </main>
             <Footer></Footer>
