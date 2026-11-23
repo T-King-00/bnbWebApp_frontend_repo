@@ -70,6 +70,37 @@ export async function PostCustomerData(customerData) {
     }
 }
 
+export async function PostChatMessage(message) {
+    const MODULE = "BookingAPI.postChatMessage";
+
+    try {
+        const url = `${apiBaseUrl}/chat`;
+        const payload = { message };
+
+        loggingUtility.info(MODULE, "Sending chat message");
+        loggingUtility.request(MODULE, { url });
+
+        const response = await axios.post(url, payload, {
+            withCredentials: true,
+        });
+
+        loggingUtility.success(MODULE, response.status, getServerTraceId(response));
+        return response;
+    }
+    catch (error)
+    {
+        const normalizedError = normalizeApiError(error, getAxiosErrorMessage(error));
+
+        loggingUtility.serverError(
+            MODULE,
+            error.response?.status ?? "NO_RESPONSE",
+            normalizedError,
+            normalizedError.traceId
+        );
+        throw normalizedError;
+    }
+}
+
 export async function Login(userAccount) {
     const MODULE = "BookingAPI.login";
     try {

@@ -7,6 +7,8 @@ import "./API/apiBase.js"
 
 import Footer from "./components/Footer/Footer.jsx";
 import {useLayoutEffect} from "react";
+import Chat from "./components/Chat/chat.jsx";
+import ChatBubble from "@/components/Chat/ChatBubble.jsx";
 
 
 
@@ -20,7 +22,9 @@ function App() {
             <Header></Header>
             <main className={"min-h-[calc(72vh-88px)] bg-bg   text-text "}>
                 <Outlet/>
+                <ChatBubble/>
             </main>
+
             <Footer></Footer>
         </div>
     )
