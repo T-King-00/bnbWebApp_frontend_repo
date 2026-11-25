@@ -37,16 +37,23 @@ export default function ChatBubble() {
         const text = input.trim();
         if (!text || isSending) return;
 
+        const message = { id: crypto.randomUUID(), role: "user", text };
+        setMessages((prev) => [...prev, message]);
+        setInput("");
         setIsSending(true);
         setSendError("");
 
         try {
-            const message = { id: crypto.randomUUID(), role: "user", text };
-            await PostChatMessage(text);
-            setMessages((prev) => [...prev, message]);
-            setInput("");
+            const { data } = await PostChatMessage(text);
+            if (typeof data !== "string" || !data.trim()) {
+                setSendError(" Please try again.");
+                return;
+            }
+
+            const reply = { id: crypto.randomUUID(), role: "assistant", text: data.trim() };
+            setMessages((prev) => [...prev, reply]);
         } catch {
-            setSendError("Could not send the message. Please try again.");
+            setSendError("Could not get a reply from the assistant. Please try again.");
         } finally {
             setIsSending(false);
         }
@@ -82,7 +89,7 @@ export default function ChatBubble() {
                                 }`}
                             >
                                 <div
-                                    className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm break-words ${
+                                    className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap break-words ${
                                         msg.role === "user"
                                             ? "bg-primary text-primary-foreground"
                                             : "bg-muted text-foreground"
@@ -96,6 +103,9 @@ export default function ChatBubble() {
                     </CardContent>
 
                     <CardFooter className="flex-col items-stretch gap-2 border-t">
+                        {isSending && (
+                            <p role="status" className="text-sm text-muted-foreground">Waiting for the assistant…</p>
+                        )}
                         {sendError && (
                             <p role="alert" className="text-red-700">{sendError}</p>
                         )}

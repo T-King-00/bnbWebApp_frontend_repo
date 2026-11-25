@@ -78,7 +78,7 @@ export async function PostChatMessage(message) {
         const payload = { message };
 
         loggingUtility.info(MODULE, "Sending chat message");
-        loggingUtility.request(MODULE, { url });
+        loggingUtility.request(MODULE, { payload });
 
         const response = await axios.post(url, payload, {
             withCredentials: true,
